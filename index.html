@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cultural Needs Analysis | OpenClaw</title>
+  <meta name="description" content="A strengths-based Cultural Needs Analysis for organisations building Aboriginal and Torres Strait Islander cultural capability." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    :root {
+      --ink: #101614;
+      --muted: #63706b;
+      --paper: #fbfaf6;
+      --line: #d9ded7;
+      --primary: #154b3f;
+      --primary-2: #246a58;
+      --ochre: #b86f2d;
+      --gold: #d99a43;
+      --blue: #315f83;
+      --soft: #eef3ec;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+    button, input, select, textarea { font: inherit; }
+    .brand-shell {
+      background:
+        radial-gradient(circle at 12% 10%, rgba(184, 111, 45, .16), transparent 28%),
+        radial-gradient(circle at 86% 18%, rgba(49, 95, 131, .14), transparent 26%),
+        linear-gradient(135deg, #fbfaf6 0%, #edf3ed 58%, #f7efe4 100%);
+    }
+    .topo {
+      background-image:
+        linear-gradient(rgba(21,75,63,.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(21,75,63,.07) 1px, transparent 1px);
+      background-size: 34px 34px;
+    }
+    .btn {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      gap: .55rem;
+      border-radius: 8px;
+      padding: .76rem 1rem;
+      font-weight: 700;
+      transition: transform .16s ease, background .16s ease, border-color .16s ease;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: #0f3a30; }
+    .btn-ghost { border: 1px solid var(--line); color: var(--primary); background: rgba(255,255,255,.56); }
+    .btn-ghost:hover { border-color: var(--primary); background: white; }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 14px 42px rgba(16,22,20,.08);
+    }
+    .section-tab[aria-current="true"] {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .choice {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: .82rem .9rem;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease, transform .16s ease;
+    }
+    .choice:hover { border-color: var(--primary-2); transform: translateY(-1px); }
+    .choice:has(input:checked) {
+      border-color: var(--primary);
+      background: #eef7f1;
+      box-shadow: inset 0 0 0 1px var(--primary);
+    }
+    .scale button {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .scale button[aria-pressed="true"] {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .progress-bar { background: linear-gradient(90deg, var(--ochre), var(--primary-2), var(--blue)); }
+    .report-prose h3 { font-size: 1rem; font-weight: 800; margin-top: 1rem; color: var(--primary); }
+    .report-prose ul { margin: .4rem 0 0; padding-left: 1.1rem; }
+    .report-prose li { margin: .24rem 0; }
+    @media print {
+      header, .no-print, #assessmentNav, #leadCapture { display: none !important; }
+      body { background: white; }
+      .panel { box-shadow: none; border-color: #ccc; }
+      main { padding: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // EDITABLE CNA CONFIG
+    // Change wording, links, weights, maturity thresholds, services, or HubSpot details here.
+    window.CNA_CONFIG = {
+      brandName: "OpenClaw",
+      assessmentName: "Cultural Needs Analysis",
+      contactEmail: "info@transhumanism.com.au",
+      calendlyUrl: "https://calendly.com/peterxing/cherie-introduction",
+      hubspot: {
+        portalId: "",
+        formGuid: "",
+        enabledWhenConfigured: true
+      },
+      leadSource: "Cultural Needs Analysis",
+      services: [
+        "Strategic cultural capability advisory",
+        "Cultural learning and training pathway design",
+        "Leadership coaching and executive briefing",
+        "Reconciliation Action Plan support",
+        "Aboriginal employment and procurement strategy",
+        "Community engagement and partnership design"
+      ],
+      levels: [
+        {
+          id: "seedling",
+          name: "Seedling",
+          min: 0,
+          description: "The organisation is beginning a cultural capability journey and has an opportunity to create shared language, intent and early momentum.",
+          characteristics: ["Curiosity is present", "Activity may be informal or emerging", "Leaders are exploring what good practice could look like"],
+          strengths: ["Openness to learning", "A clear starting point", "Room to design with care"],
+          next: ["Create a shared cultural capability roadmap", "Identify executive sponsors", "Start with foundational learning and relationship mapping"]
+        },
+        {
+          id: "growing",
+          name: "Growing",
+          min: 26,
+          description: "The organisation has begun putting structures and learning in place, with a chance to connect activity into a more coherent strategy.",
+          characteristics: ["Some training and initiatives are underway", "Leadership support is visible in pockets", "Community relationships may be developing"],
+          strengths: ["Early commitment", "Practical appetite for improvement", "Existing initiatives to build from"],
+          next: ["Align initiatives to measurable outcomes", "Lift leadership advocacy", "Strengthen consultation and feedback loops"]
+        },
+        {
+          id: "grounded",
+          name: "Grounded",
+          min: 46,
+          description: "The organisation has established foundations and is ready to deepen practice, accountability and cultural safety across teams.",
+          characteristics: ["Clearer governance and learning practices", "Staff confidence is building", "Partnership intent is becoming more consistent"],
+          strengths: ["Visible foundations", "Growing organisational confidence", "Better conditions for sustained change"],
+          next: ["Build a multi-year capability plan", "Connect RAP, workforce and procurement goals", "Measure impact across people, partners and community"]
+        },
+        {
+          id: "thriving",
+          name: "Thriving",
+          min: 66,
+          description: "The organisation is embedding cultural capability as a strategic asset, with stronger relationships, leadership ownership and measurable progress.",
+          characteristics: ["Leaders advocate consistently", "Cultural safety is part of organisational practice", "Partnerships are more mature and reciprocal"],
+          strengths: ["Strategic alignment", "Practical maturity", "Improving impact discipline"],
+          next: ["Scale coaching and communities of practice", "Refine impact measurement", "Share stories of learning, partnership and outcomes"]
+        },
+        {
+          id: "regenerative",
+          name: "Regenerative",
+          min: 84,
+          description: "The organisation is contributing to a broader ecosystem of belonging, partnership and shared value with Aboriginal and Torres Strait Islander peoples.",
+          characteristics: ["Cultural capability informs strategy", "Partnerships are reciprocal and long-term", "Impact is measured, learned from and reinvested"],
+          strengths: ["High trust conditions", "Embedded leadership commitment", "Strong capacity to influence systems"],
+          next: ["Co-design sector-leading practice", "Mentor partners and supply chains", "Use evidence to reinvest in community outcomes"]
+        }
+      ],
+      sections: [
+        {
+          id: "today",
+          title: "Where Are You Today?",
+          intro: "Start with a clear, non-judgemental snapshot of your organisation's current position and aspirations.",
+          weight: 15,
+          questions: [
+            { id: "maturity", type: "choice", label: "Which statement best describes your current cultural capability maturity?", options: [
+              ["We are beginning to explore what this means for our organisation", 1],
+              ["We have some activities underway but they are not yet connected", 2],
+              ["We have foundations in place and want to deepen practice", 3],
+              ["We have an active strategy and are measuring progress", 4],
+              ["Cultural capability is embedded in strategy, partnerships and impact", 5]
+            ]},
+            { id: "aspiration", type: "choice", reportOnly: true, label: "What maturity level are you aspiring towards over the next 12 to 24 months?", options: [
+              ["Seedling", 1], ["Growing", 2], ["Grounded", 3], ["Thriving", 4], ["Regenerative", 5]
+            ]},
+            { id: "drivers", type: "check", label: "What is driving this work now?", options: [
+              "Leadership priority", "Reconciliation Action Plan", "Workforce development", "Community expectations", "Procurement and supplier diversity", "Partnership opportunity", "Service quality and cultural safety", "Employee belonging"
+            ]}
+          ]
+        },
+        {
+          id: "leadership",
+          title: "Leadership and Organisational Commitment",
+          intro: "Explore how leadership, governance and communication create the conditions for sustained cultural capability.",
+          weight: 22,
+          questions: [
+            { id: "advocacy", type: "scale", label: "Leadership actively advocates for Aboriginal and Torres Strait Islander cultural capability." },
+            { id: "strategy", type: "scale", label: "Cultural capability is connected to organisational strategy and decision-making." },
+            { id: "structures", type: "check", label: "Which structures or targets are in place or emerging?", options: [
+              "RAP working group or champion network", "Executive sponsor", "Aboriginal employment target", "Aboriginal procurement target", "Cultural governance or advisory group", "Regular internal communication", "Board or senior leadership reporting", "Dedicated budget or resourcing"
+            ]},
+            { id: "commitment", type: "choice", label: "How would you describe organisational commitment today?", options: [
+              ["Curious and forming", 1], ["Supportive but inconsistent", 2], ["Clear and developing", 3], ["Strong and increasingly embedded", 4], ["Shared, visible and accountable", 5]
+            ]}
+          ]
+        },
+        {
+          id: "workforce",
+          title: "Workforce Capability",
+          intro: "Consider how staff learn, practise and build confidence in culturally safe ways of working.",
+          weight: 20,
+          questions: [
+            { id: "training", type: "choice", label: "What cultural learning has your workforce undertaken?", options: [
+              ["Little or no formal learning yet", 1],
+              ["Introductory sessions or one-off awareness training", 2],
+              ["Role-relevant learning for some teams", 3],
+              ["A structured learning pathway across the organisation", 4],
+              ["Ongoing learning, coaching and reflective practice", 5]
+            ]},
+            { id: "participation", type: "choice", label: "Approximately what proportion of staff have participated in cultural learning?", options: [
+              ["Not yet known", 1], ["Under 25%", 2], ["25% to 50%", 3], ["50% to 80%", 4], ["Over 80%", 5]
+            ]},
+            { id: "confidence", type: "scale", label: "Staff feel confident engaging respectfully with Aboriginal and Torres Strait Islander peoples, communities and knowledge." },
+            { id: "maturity", type: "scale", label: "Learning is reinforced beyond training through reflection, coaching, team practice or communities of practice." }
+          ]
+        },
+        {
+          id: "community",
+          title: "Community Connections",
+          intro: "Look at relationships, consultation practices and the quality of partnership with Traditional Custodians, organisations and businesses.",
+          weight: 20,
+          questions: [
+            { id: "traditionalCustodians", type: "scale", label: "Relationships with Traditional Custodians are respectful, active and appropriately resourced." },
+            { id: "organisations", type: "scale", label: "Relationships with Aboriginal organisations and community partners are developing in a reciprocal way." },
+            { id: "businesses", type: "scale", label: "The organisation engages Aboriginal businesses through procurement, partnership or supplier development." },
+            { id: "practices", type: "check", label: "Which engagement practices are currently used?", options: [
+              "Relationship mapping", "Early consultation before decisions are final", "Paid participation or advisory roles", "Feedback loops after consultation", "Partnership agreements", "Cultural protocols guidance", "Local community briefings", "Supplier or partner introductions"
+            ]},
+            { id: "partnership", type: "choice", label: "How mature are your community partnerships?", options: [
+              ["We are identifying where to begin", 1],
+              ["Some relationships exist but are informal", 2],
+              ["Relationships are active and becoming more structured", 3],
+              ["Partnerships are planned, resourced and reviewed", 4],
+              ["Partnerships are long-term, reciprocal and impact-led", 5]
+            ]}
+          ]
+        },
+        {
+          id: "impact",
+          title: "Impact and Outcomes",
+          intro: "Connect effort to outcomes across employment, procurement, staff capability, community value and learning.",
+          weight: 15,
+          questions: [
+            { id: "employment", type: "scale", label: "The organisation can track and learn from Aboriginal and Torres Strait Islander employment outcomes." },
+            { id: "procurement", type: "scale", label: "The organisation can track Aboriginal business procurement outcomes and supplier relationships." },
+            { id: "capability", type: "scale", label: "Staff capability outcomes are measured beyond attendance numbers." },
+            { id: "communityOutcomes", type: "scale", label: "Community outcomes, feedback or shared value are considered when evaluating success." },
+            { id: "measurement", type: "choice", label: "How mature is your impact measurement?", options: [
+              ["Not yet measured", 1], ["Mostly activity counts", 2], ["Some outcome indicators", 3], ["Regular reporting and reflection", 4], ["Evidence informs strategy, reinvestment and partnership decisions", 5]
+            ]}
+          ]
+        },
+        {
+          id: "future",
+          title: "Future Focus",
+          intro: "Finish by naming the next meaningful step: the challenge, the opportunity and where support would create momentum.",
+          weight: 8,
+          questions: [
+            { id: "challenge", type: "text", label: "What is the biggest challenge you are navigating?" },
+            { id: "opportunity", type: "text", label: "What is the biggest opportunity you can see?" },
+            { id: "priorities", type: "check", label: "Which priority areas would be most useful to support next?", options: [
+              "Executive advisory", "Cultural capability training", "Leadership coaching", "RAP planning or refresh", "Community engagement strategy", "Aboriginal employment pathway", "Aboriginal procurement pathway", "Impact measurement", "Team workshops", "Governance and reporting"
+            ]}
+          ]
+        }
+      ]
+    };
+  </script>
+
+  <header class="brand-shell topo border-b border-[color:var(--line)]">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      <a href="/" class="flex items-center gap-3 font-extrabold text-[color:var(--primary)]">
+        <span class="grid h-9 w-9 place-items-center rounded-lg bg-[color:var(--primary)] text-white">OC</span>
+        <span>OpenClaw</span>
+      </a>
+      <div class="hidden items-center gap-2 sm:flex">
+        <a class="btn btn-ghost" href="#report">Report</a>
+        <a class="btn btn-primary" id="topCalendly" target="_blank" rel="noopener">Book a strategy session</a>
+      </div>
+    </nav>
+    <section class="mx-auto grid max-w-7xl gap-8 px-4 pb-12 pt-8 sm:px-6 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:pb-16">
+      <div>
+        <p class="mb-4 inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-white/70 px-3 py-1 text-sm font-bold text-[color:var(--primary)]">
+          <i data-lucide="sparkles" class="h-4 w-4"></i>
+          Strengths-based assessment
+        </p>
+        <h1 class="max-w-4xl text-4xl font-extrabold leading-tight tracking-normal sm:text-5xl lg:text-6xl">
+          Cultural Needs Analysis
+        </h1>
+        <p class="mt-5 max-w-2xl text-lg leading-8 text-[color:var(--muted)]">
+          A guided, practical assessment for organisations building Aboriginal and Torres Strait Islander cultural capability through connection, belonging, cultural safety, community engagement and measurable impact.
+        </p>
+        <div class="mt-7 flex flex-col gap-3 sm:flex-row">
+          <a class="btn btn-primary" href="#assessment"><i data-lucide="clipboard-list" class="h-5 w-5"></i> Start assessment</a>
+          <button class="btn btn-ghost" id="saveDraftBtn"><i data-lucide="save" class="h-5 w-5"></i> Save draft</button>
+        </div>
+      </div>
+      <aside class="panel p-5 sm:p-6">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="text-sm font-bold uppercase tracking-[.16em] text-[color:var(--ochre)]">Journey map</p>
+            <h2 class="mt-1 text-2xl font-extrabold">Seedling to Regenerative</h2>
+          </div>
+          <i data-lucide="route" class="h-9 w-9 text-[color:var(--primary)]"></i>
+        </div>
+        <div id="levelPreview" class="mt-6 space-y-3"></div>
+      </aside>
+    </section>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid gap-6 lg:grid-cols-[280px_1fr]">
+      <aside id="assessmentNav" class="no-print lg:sticky lg:top-4 lg:self-start">
+        <div class="panel p-4">
+          <div class="mb-3 flex items-center justify-between text-sm font-bold text-[color:var(--muted)]">
+            <span>Progress</span><span id="progressText">0%</span>
+          </div>
+          <div class="h-2 overflow-hidden rounded-full bg-[#e2e7df]"><div id="progressBar" class="progress-bar h-full w-0 rounded-full"></div></div>
+          <div id="sectionTabs" class="mt-4 grid gap-2"></div>
+        </div>
+      </aside>
+
+      <section id="assessment" class="panel p-4 sm:p-6 lg:p-8">
+        <div class="flex flex-col gap-3 border-b border-[color:var(--line)] pb-5 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p class="text-sm font-bold uppercase tracking-[.16em] text-[color:var(--ochre)]">Interactive form</p>
+            <h2 id="sectionTitle" class="mt-1 text-2xl font-extrabold sm:text-3xl"></h2>
+            <p id="sectionIntro" class="mt-2 max-w-3xl leading-7 text-[color:var(--muted)]"></p>
+          </div>
+          <div class="rounded-lg bg-[color:var(--soft)] px-3 py-2 text-sm font-bold text-[color:var(--primary)]">
+            <span id="sectionCount"></span>
+          </div>
+        </div>
+        <form id="cnaForm" class="mt-6 space-y-6"></form>
+        <div class="no-print mt-8 flex flex-col-reverse gap-3 border-t border-[color:var(--line)] pt-5 sm:flex-row sm:justify-between">
+          <button class="btn btn-ghost" id="prevBtn" type="button"><i data-lucide="arrow-left" class="h-5 w-5"></i> Previous</button>
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <button class="btn btn-ghost" id="emailDraftBtn" type="button"><i data-lucide="mail" class="h-5 w-5"></i> Email draft</button>
+            <button class="btn btn-primary" id="nextBtn" type="button">Next <i data-lucide="arrow-right" class="h-5 w-5"></i></button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section id="report" class="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]">
+      <div class="panel p-4 sm:p-6 lg:p-8">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p class="text-sm font-bold uppercase tracking-[.16em] text-[color:var(--ochre)]">Personalised report</p>
+            <h2 class="mt-1 text-2xl font-extrabold sm:text-3xl">Your Cultural Needs Analysis report</h2>
+            <p class="mt-2 leading-7 text-[color:var(--muted)]">The report updates as the form is completed and can be printed, saved or sent as a lead enquiry.</p>
+          </div>
+          <div class="no-print flex flex-wrap gap-2">
+            <button class="btn btn-ghost" id="printBtn"><i data-lucide="printer" class="h-5 w-5"></i> Print</button>
+            <button class="btn btn-primary" id="openLeadBtn"><i data-lucide="send" class="h-5 w-5"></i> Send enquiry</button>
+          </div>
+        </div>
+        <div id="reportContent" class="report-prose mt-6 rounded-lg border border-[color:var(--line)] bg-white p-4 leading-7 sm:p-6"></div>
+      </div>
+      <aside class="panel h-fit p-5 sm:p-6">
+        <h3 class="text-xl font-extrabold">Recommended advisory pathway</h3>
+        <p class="mt-2 leading-7 text-[color:var(--muted)]">Use this as a conversion bridge from assessment into strategy, training, coaching, RAP and organisational development services.</p>
+        <ul id="serviceList" class="mt-4 space-y-3"></ul>
+        <a class="btn btn-primary mt-5 w-full" id="sideCalendly" target="_blank" rel="noopener"><i data-lucide="calendar" class="h-5 w-5"></i> Book Calendly session</a>
+      </aside>
+    </section>
+  </main>
+
+  <dialog id="leadCapture" class="w-[min(92vw,640px)] rounded-lg border border-[color:var(--line)] p-0 shadow-2xl">
+    <form method="dialog" class="border-b border-[color:var(--line)] p-5">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-sm font-bold uppercase tracking-[.16em] text-[color:var(--ochre)]">Lead capture</p>
+          <h2 class="mt-1 text-2xl font-extrabold">Send your CNA enquiry</h2>
+        </div>
+        <button class="grid h-10 w-10 place-items-center rounded-lg border border-[color:var(--line)]" aria-label="Close"><i data-lucide="x" class="h-5 w-5"></i></button>
+      </div>
+    </form>
+    <div class="p-5">
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="grid gap-2 text-sm font-bold">Name <input id="leadName" class="rounded-lg border border-[color:var(--line)] px-3 py-3 font-normal" placeholder="Your name" /></label>
+        <label class="grid gap-2 text-sm font-bold">Email <input id="leadEmail" type="email" class="rounded-lg border border-[color:var(--line)] px-3 py-3 font-normal" placeholder="name@organisation.com.au" /></label>
+        <label class="grid gap-2 text-sm font-bold sm:col-span-2">Organisation <input id="leadOrg" class="rounded-lg border border-[color:var(--line)] px-3 py-3 font-normal" placeholder="Organisation" /></label>
+        <label class="grid gap-2 text-sm font-bold sm:col-span-2">What support are you exploring? <textarea id="leadNotes" rows="4" class="rounded-lg border border-[color:var(--line)] px-3 py-3 font-normal" placeholder="Advisory, training, RAP, coaching, partnership strategy..."></textarea></label>
+      </div>
+      <p id="leadStatus" class="mt-3 text-sm text-[color:var(--muted)]"></p>
+      <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
+        <a class="btn btn-ghost" id="modalCalendly" target="_blank" rel="noopener"><i data-lucide="calendar" class="h-5 w-5"></i> Calendly</a>
+        <button class="btn btn-primary" id="submitLeadBtn"><i data-lucide="send" class="h-5 w-5"></i> Submit lead</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    const config = window.CNA_CONFIG;
+    const state = { sectionIndex: 0, answers: JSON.parse(localStorage.getItem("cnaAnswersV1") || "{}") };
+    const $ = (id) => document.getElementById(id);
+
+    function init() {
+      ["topCalendly", "sideCalendly", "modalCalendly"].forEach(id => $(id).href = config.calendlyUrl);
+      $("serviceList").innerHTML = config.services.map(s => `<li class="flex gap-3"><i data-lucide="check-circle-2" class="mt-1 h-5 w-5 shrink-0 text-[color:var(--primary)]"></i><span>${s}</span></li>`).join("");
+      $("levelPreview").innerHTML = config.levels.map(level => `<div class="rounded-lg border border-[color:var(--line)] bg-white/70 p-3"><div class="flex items-center justify-between gap-3"><strong>${level.name}</strong><span class="text-xs font-bold text-[color:var(--muted)]">${level.min}+ pts</span></div><p class="mt-1 text-sm leading-6 text-[color:var(--muted)]">${level.description}</p></div>`).join("");
+      $("sectionTabs").innerHTML = config.sections.map((s, i) => `<button type="button" class="section-tab rounded-lg border border-[color:var(--line)] px-3 py-3 text-left text-sm font-bold" data-index="${i}">${i + 1}. ${s.title}</button>`).join("");
+      document.querySelectorAll(".section-tab").forEach(btn => btn.addEventListener("click", () => { state.sectionIndex = Number(btn.dataset.index); render(); }));
+      $("prevBtn").addEventListener("click", () => move(-1));
+      $("nextBtn").addEventListener("click", () => move(1));
+      $("saveDraftBtn").addEventListener("click", saveDraft);
+      $("printBtn").addEventListener("click", () => window.print());
+      $("openLeadBtn").addEventListener("click", () => $("leadCapture").showModal());
+      $("submitLeadBtn").addEventListener("click", submitLead);
+      $("emailDraftBtn").addEventListener("click", openEmailDraft);
+      render();
+      lucide.createIcons();
+    }
+
+    function answerKey(sectionId, questionId) { return `${sectionId}.${questionId}`; }
+    function setAnswer(key, value) {
+      state.answers[key] = value;
+      localStorage.setItem("cnaAnswersV1", JSON.stringify(state.answers));
+      renderProgress();
+      renderReport();
+    }
+
+    function render() {
+      const section = config.sections[state.sectionIndex];
+      $("sectionTitle").textContent = section.title;
+      $("sectionIntro").textContent = section.intro;
+      $("sectionCount").textContent = `Section ${state.sectionIndex + 1} of ${config.sections.length}`;
+      $("prevBtn").disabled = state.sectionIndex === 0;
+      $("nextBtn").innerHTML = state.sectionIndex === config.sections.length - 1 ? `View report <i data-lucide="arrow-down" class="h-5 w-5"></i>` : `Next <i data-lucide="arrow-right" class="h-5 w-5"></i>`;
+      document.querySelectorAll(".section-tab").forEach((btn, i) => btn.setAttribute("aria-current", i === state.sectionIndex ? "true" : "false"));
+      $("cnaForm").innerHTML = section.questions.map(q => renderQuestion(section, q)).join("");
+      bindInputs(section);
+      renderProgress();
+      renderReport();
+      lucide.createIcons();
+    }
+
+    function renderQuestion(section, q) {
+      const key = answerKey(section.id, q.id);
+      const value = state.answers[key];
+      const base = `<fieldset class="rounded-lg border border-[color:var(--line)] bg-[#fffefb] p-4"><legend class="px-1 text-base font-extrabold">${q.label}</legend>`;
+      if (q.type === "choice") {
+        return base + `<div class="mt-4 grid gap-3">${q.options.map(([label, score], i) => `<label class="choice"><input class="mr-2" type="radio" name="${key}" value="${score}" data-label="${label}" ${String(value?.score) === String(score) ? "checked" : ""}/> ${label}</label>`).join("")}</div></fieldset>`;
+      }
+      if (q.type === "scale") {
+        return base + `<div class="scale mt-4 flex flex-wrap gap-2" role="group" aria-label="${q.label}">${[1,2,3,4,5].map(n => `<button type="button" data-key="${key}" data-value="${n}" aria-pressed="${Number(value?.score) === n}">${n}</button>`).join("")}</div><p class="mt-3 text-sm text-[color:var(--muted)]">1 = emerging, 3 = developing, 5 = embedded and impact-led</p></fieldset>`;
+      }
+      if (q.type === "check") {
+        const selected = value?.values || [];
+        return base + `<div class="mt-4 grid gap-3 sm:grid-cols-2">${q.options.map(label => `<label class="choice"><input class="mr-2" type="checkbox" name="${key}" value="${label}" ${selected.includes(label) ? "checked" : ""}/> ${label}</label>`).join("")}</div></fieldset>`;
+      }
+      return base + `<textarea name="${key}" rows="4" class="mt-4 w-full rounded-lg border border-[color:var(--line)] px-3 py-3" placeholder="Write a short response...">${value?.text || ""}</textarea></fieldset>`;
+    }
+
+    function bindInputs(section) {
+      $("cnaForm").querySelectorAll("input[type=radio]").forEach(input => input.addEventListener("change", () => setAnswer(input.name, { score: Number(input.value), label: input.dataset.label })));
+      $("cnaForm").querySelectorAll("input[type=checkbox]").forEach(input => input.addEventListener("change", () => {
+        const values = [...document.querySelectorAll(`input[name="${input.name}"]:checked`)].map(i => i.value);
+        setAnswer(input.name, { values, score: Math.min(5, Math.max(1, Math.ceil(values.length / 2))) });
+      }));
+      $("cnaForm").querySelectorAll("textarea").forEach(input => input.addEventListener("input", () => setAnswer(input.name, { text: input.value })));
+      $("cnaForm").querySelectorAll(".scale button").forEach(btn => btn.addEventListener("click", () => setAnswer(btn.dataset.key, { score: Number(btn.dataset.value), label: `${btn.dataset.value} out of 5` })));
+    }
+
+    function move(delta) {
+      if (state.sectionIndex === config.sections.length - 1 && delta > 0) {
+        location.hash = "report";
+        return;
+      }
+      state.sectionIndex = Math.max(0, Math.min(config.sections.length - 1, state.sectionIndex + delta));
+      render();
+      document.getElementById("assessment").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function scoreReport() {
+      let weighted = 0;
+      let answeredScoreQuestions = 0;
+      let totalScoreQuestions = 0;
+      const sectionScores = config.sections.map(section => {
+        const scoringQuestions = section.questions.filter(q => !q.reportOnly && q.type !== "text");
+        totalScoreQuestions += scoringQuestions.length;
+        const scores = scoringQuestions.map(q => state.answers[answerKey(section.id, q.id)]?.score).filter(Boolean);
+        answeredScoreQuestions += scores.length;
+        const raw = scores.length ? scores.reduce((a,b) => a + b, 0) / scores.length : 0;
+        const percent = raw ? ((raw - 1) / 4) * 100 : 0;
+        weighted += percent * (section.weight / 100);
+        return { section, percent, answered: scores.length, total: scoringQuestions.length };
+      });
+      const level = [...config.levels].reverse().find(l => weighted >= l.min) || config.levels[0];
+      const aspirationAnswer = state.answers["today.aspiration"];
+      const aspirational = aspirationAnswer ? config.levels[Math.max(0, Math.min(4, aspirationAnswer.score - 1))] : config.levels[3];
+      return { score: Math.round(weighted), level, aspirational, sectionScores, answeredScoreQuestions, totalScoreQuestions };
+    }
+
+    function renderProgress() {
+      const report = scoreReport();
+      const percent = report.totalScoreQuestions ? Math.round((report.answeredScoreQuestions / report.totalScoreQuestions) * 100) : 0;
+      $("progressText").textContent = `${percent}%`;
+      $("progressBar").style.width = `${percent}%`;
+    }
+
+    function renderReport() {
+      const r = scoreReport();
+      const sorted = [...r.sectionScores].sort((a,b) => b.percent - a.percent);
+      const strengths = sorted.filter(s => s.percent >= 62).slice(0, 3);
+      const growth = sorted.filter(s => s.percent < 62).sort((a,b) => a.percent - b.percent).slice(0, 3);
+      const challenge = state.answers["future.challenge"]?.text;
+      const opportunity = state.answers["future.opportunity"]?.text;
+      const priority = state.answers["future.priorities"]?.values || [];
+      $("reportContent").innerHTML = `
+        <div class="grid gap-3 sm:grid-cols-3">
+          <div class="rounded-lg bg-[color:var(--soft)] p-4"><p class="text-sm font-bold text-[color:var(--muted)]">Current maturity</p><p class="mt-1 text-2xl font-extrabold">${r.level.name}</p><p class="text-sm">${r.score}/100</p></div>
+          <div class="rounded-lg bg-[#f7efe4] p-4"><p class="text-sm font-bold text-[color:var(--muted)]">Aspirational maturity</p><p class="mt-1 text-2xl font-extrabold">${r.aspirational.name}</p><p class="text-sm">12 to 24 month horizon</p></div>
+          <div class="rounded-lg bg-[#edf2f6] p-4"><p class="text-sm font-bold text-[color:var(--muted)]">Completion</p><p class="mt-1 text-2xl font-extrabold">${r.answeredScoreQuestions}/${r.totalScoreQuestions}</p><p class="text-sm">scored prompts</p></div>
+        </div>
+        <h3>Current position</h3><p>${r.level.description}</p>
+        <h3>Gap analysis</h3><p>Your current result is <strong>${r.level.name}</strong>, with an aspiration towards <strong>${r.aspirational.name}</strong>. The practical opportunity is to connect existing effort into clearer leadership ownership, workforce confidence, community partnership and impact measurement.</p>
+        <h3>Strength areas</h3>${listOrNote(strengths.map(s => `${s.section.title}: ${Math.round(s.percent)}% maturity signal`), "Complete more of the assessment to reveal strength areas.")}
+        <h3>Growth opportunities</h3>${listOrNote(growth.map(s => `${s.section.title}: an opportunity for focused support and capability building`), "Complete more of the assessment to reveal growth opportunities.")}
+        <h3>Recommended actions</h3>${listOrNote(r.level.next, "")}
+        <h3>Future focus</h3><p><strong>Challenge:</strong> ${escapeHtml(challenge || "Not yet captured.")}</p><p><strong>Opportunity:</strong> ${escapeHtml(opportunity || "Not yet captured.")}</p>
+        <h3>Priority support areas</h3>${listOrNote(priority, "No priority areas selected yet.")}
+        <h3>Suggested advisory services</h3>${listOrNote(config.services.slice(0, 4), "")}
+      `;
+    }
+
+    function listOrNote(items, note) {
+      return items && items.length ? `<ul>${items.map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>` : `<p>${note}</p>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]));
+    }
+
+    function saveDraft() {
+      localStorage.setItem("cnaAnswersV1", JSON.stringify(state.answers));
+      $("saveDraftBtn").innerHTML = `<i data-lucide="check" class="h-5 w-5"></i> Draft saved`;
+      lucide.createIcons();
+      setTimeout(() => { $("saveDraftBtn").innerHTML = `<i data-lucide="save" class="h-5 w-5"></i> Save draft`; lucide.createIcons(); }, 1800);
+    }
+
+    function reportText() {
+      const r = scoreReport();
+      return `Cultural Needs Analysis enquiry%0D%0A%0D%0ACurrent maturity: ${r.level.name} (${r.score}/100)%0D%0AAspirational maturity: ${r.aspirational.name}%0D%0A%0D%0APriority areas: ${(state.answers["future.priorities"]?.values || []).join(", ") || "Not selected"}%0D%0A%0D%0AChallenge: ${state.answers["future.challenge"]?.text || "Not captured"}%0D%0AOpportunity: ${state.answers["future.opportunity"]?.text || "Not captured"}`;
+    }
+
+    function openEmailDraft() {
+      location.href = `mailto:${config.contactEmail}?subject=Cultural%20Needs%20Analysis%20enquiry&body=${reportText()}`;
+    }
+
+    async function submitLead() {
+      const lead = {
+        name: $("leadName").value.trim(),
+        email: $("leadEmail").value.trim(),
+        organisation: $("leadOrg").value.trim(),
+        notes: $("leadNotes").value.trim(),
+        source: config.leadSource,
+        score: scoreReport(),
+        answers: state.answers
+      };
+      if (!lead.email) {
+        $("leadStatus").textContent = "Add an email so the lead can be followed up.";
+        return;
+      }
+      const hubspotReady = config.hubspot.portalId && config.hubspot.formGuid;
+      if (hubspotReady) {
+        try {
+          const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${config.hubspot.portalId}/${config.hubspot.formGuid}`;
+          const fields = [
+            ["email", lead.email], ["firstname", lead.name], ["company", lead.organisation],
+            ["message", `${lead.notes}\n\nCNA maturity: ${lead.score.level.name} (${lead.score.score}/100)\nAspiration: ${lead.score.aspirational.name}`]
+          ].map(([name, value]) => ({ name, value }));
+          const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fields, context: { pageUri: location.href, pageName: document.title } }) });
+          if (!res.ok) throw new Error("HubSpot submission failed");
+          $("leadStatus").textContent = "Lead submitted to HubSpot. Book a session as the next step.";
+          return;
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+      $("leadStatus").innerHTML = `HubSpot form IDs are not configured yet. Opening an email handoff now, and the lead payload has been saved in this browser.`;
+      localStorage.setItem("cnaLeadPayloadV1", JSON.stringify(lead));
+      openEmailDraft();
+    }
+
+    init();
+  </script>
+</body>
+</html>
