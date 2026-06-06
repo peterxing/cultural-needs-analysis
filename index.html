@@ -126,7 +126,23 @@
       hubspot: {
         portalId: "",
         formGuid: "",
-        enabledWhenConfigured: true
+        enabledWhenConfigured: true,
+        // Paste HubSpot form field/property names here if Speaking in Colour uses custom CNA properties.
+        fields: {
+          email: "email",
+          name: "firstname",
+          organisation: "company",
+          role: "jobtitle",
+          report: "message",
+          currentLevel: "",
+          currentScore: "",
+          aspirationalLevel: "",
+          priorities: "",
+          challenge: "",
+          opportunity: "",
+          distributionConsent: "",
+          source: ""
+        }
       },
       leadSource: "Cultural Needs Analysis",
       services: [
@@ -415,6 +431,7 @@
         <label class="grid gap-2 text-sm font-bold">Name <input id="leadName" class="rounded-lg border border-[color:var(--line)] px-3 py-3 font-normal" placeholder="Your name" /></label>
         <label class="grid gap-2 text-sm font-bold">Email <input id="leadEmail" type="email" class="rounded-lg border border-[color:var(--line)] px-3 py-3 font-normal" placeholder="name@organisation.com.au" /></label>
         <label class="grid gap-2 text-sm font-bold sm:col-span-2">Organisation <input id="leadOrg" class="rounded-lg border border-[color:var(--line)] px-3 py-3 font-normal" placeholder="Organisation" /></label>
+        <label class="grid gap-2 text-sm font-bold sm:col-span-2">Role / team <input id="leadRole" class="rounded-lg border border-[color:var(--line)] px-3 py-3 font-normal" placeholder="Role or team" /></label>
         <label class="grid gap-2 text-sm font-bold sm:col-span-2">What support are you exploring? <textarea id="leadNotes" rows="4" class="rounded-lg border border-[color:var(--line)] px-3 py-3 font-normal" placeholder="Advisory, training, RAP, coaching, partnership strategy..."></textarea></label>
         <label class="choice sm:col-span-2"><input id="leadConsent" class="mr-2" type="checkbox" /> Add me to the Speaking in Colour distribution list.</label>
       </div>
@@ -591,8 +608,37 @@
     }
 
     function reportText() {
+      return encodeURIComponent(reportPlainText()).replace(/%20/g, "%20");
+    }
+
+    function reportPlainText(extraNotes = "") {
       const r = scoreReport();
-      return `Cultural Needs Analysis enquiry%0D%0A%0D%0AName: ${state.answers["future.contactName"]?.text || "Not captured"}%0D%0AEmail: ${state.answers["future.contactEmail"]?.text || "Not captured"}%0D%0AOrganisation: ${state.answers["future.organisation"]?.text || "Not captured"}%0D%0ADistribution list consent: ${state.answers["future.distributionConsent"]?.checked ? "Yes" : "No"}%0D%0A%0D%0ACurrent maturity: ${r.level.name} (${r.score}/100)%0D%0AAspirational maturity: ${r.aspirational.name}%0D%0A%0D%0APriority areas: ${(state.answers["future.priorities"]?.values || []).join(", ") || "Not selected"}%0D%0A%0D%0AChallenge: ${state.answers["future.challenge"]?.text || "Not captured"}%0D%0AOpportunity: ${state.answers["future.opportunity"]?.text || "Not captured"}`;
+      const lines = [
+        "Cultural Needs Analysis enquiry",
+        "",
+        `Name: ${state.answers["future.contactName"]?.text || "Not captured"}`,
+        `Email: ${state.answers["future.contactEmail"]?.text || "Not captured"}`,
+        `Organisation: ${state.answers["future.organisation"]?.text || "Not captured"}`,
+        `Role / team: ${state.answers["future.role"]?.text || "Not captured"}`,
+        `Distribution list consent: ${state.answers["future.distributionConsent"]?.checked ? "Yes" : "No"}`,
+        "",
+        `Current maturity: ${r.level.name} (${r.score}/100)`,
+        `Aspirational maturity: ${r.aspirational.name}`,
+        `Completion: ${r.answeredScoreQuestions}/${r.totalScoreQuestions} scored prompts`,
+        "",
+        `Priority areas: ${(state.answers["future.priorities"]?.values || []).join(", ") || "Not selected"}`,
+        "",
+        `Challenge: ${state.answers["future.challenge"]?.text || "Not captured"}`,
+        `Opportunity: ${state.answers["future.opportunity"]?.text || "Not captured"}`,
+        "",
+        "Recommended next steps:",
+        ...r.level.next.map(item => `- ${item}`),
+        "",
+        "Suggested advisory services:",
+        ...config.services.slice(0, 4).map(item => `- ${item}`)
+      ];
+      if (extraNotes) lines.push("", `Additional notes: ${extraNotes}`);
+      return lines.join("\n");
     }
 
     function openEmailDraft() {
@@ -603,8 +649,33 @@
       $("leadName").value ||= state.answers["future.contactName"]?.text || "";
       $("leadEmail").value ||= state.answers["future.contactEmail"]?.text || "";
       $("leadOrg").value ||= state.answers["future.organisation"]?.text || "";
+      $("leadRole").value ||= state.answers["future.role"]?.text || "";
       $("leadConsent").checked = $("leadConsent").checked || Boolean(state.answers["future.distributionConsent"]?.checked);
       $("leadCapture").showModal();
+    }
+
+    function hubspotField(name, value) {
+      return name && value !== undefined && value !== null && value !== "" ? { name, value: String(value) } : null;
+    }
+
+    function buildHubSpotFields(lead) {
+      const f = config.hubspot.fields || {};
+      const priorities = lead.priorityAreas.join(", ");
+      return [
+        hubspotField(f.email || "email", lead.email),
+        hubspotField(f.name || "firstname", lead.name),
+        hubspotField(f.organisation || "company", lead.organisation),
+        hubspotField(f.role || "jobtitle", lead.role),
+        hubspotField(f.report || "message", reportPlainText(lead.notes)),
+        hubspotField(f.currentLevel, lead.score.level.name),
+        hubspotField(f.currentScore, lead.score.score),
+        hubspotField(f.aspirationalLevel, lead.score.aspirational.name),
+        hubspotField(f.priorities, priorities),
+        hubspotField(f.challenge, lead.challenge),
+        hubspotField(f.opportunity, lead.opportunity),
+        hubspotField(f.distributionConsent, lead.distributionConsent ? "Yes" : "No"),
+        hubspotField(f.source, lead.source)
+      ].filter(Boolean);
     }
 
     async function submitLead() {
@@ -612,9 +683,13 @@
         name: $("leadName").value.trim() || state.answers["future.contactName"]?.text || "",
         email: $("leadEmail").value.trim() || state.answers["future.contactEmail"]?.text || "",
         organisation: $("leadOrg").value.trim() || state.answers["future.organisation"]?.text || "",
+        role: $("leadRole").value.trim() || state.answers["future.role"]?.text || "",
         notes: $("leadNotes").value.trim(),
         distributionConsent: $("leadConsent").checked || Boolean(state.answers["future.distributionConsent"]?.checked),
         source: config.leadSource,
+        challenge: state.answers["future.challenge"]?.text || "",
+        opportunity: state.answers["future.opportunity"]?.text || "",
+        priorityAreas: state.answers["future.priorities"]?.values || [],
         score: scoreReport(),
         answers: state.answers
       };
@@ -626,10 +701,7 @@
       if (hubspotReady) {
         try {
           const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${config.hubspot.portalId}/${config.hubspot.formGuid}`;
-          const fields = [
-            ["email", lead.email], ["firstname", lead.name], ["company", lead.organisation],
-            ["message", `${lead.notes}\n\nCNA maturity: ${lead.score.level.name} (${lead.score.score}/100)\nAspiration: ${lead.score.aspirational.name}\nDistribution list consent: ${lead.distributionConsent ? "Yes" : "No"}`]
-          ].map(([name, value]) => ({ name, value }));
+          const fields = buildHubSpotFields(lead);
           const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fields, context: { pageUri: location.href, pageName: document.title } }) });
           if (!res.ok) throw new Error("HubSpot submission failed");
           $("leadStatus").textContent = "Lead submitted to HubSpot. Book a session as the next step.";
