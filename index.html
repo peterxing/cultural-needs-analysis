@@ -402,6 +402,7 @@
           </div>
           <div class="no-print flex flex-wrap gap-2">
             <button class="btn btn-ghost" id="printBtn"><i data-lucide="printer" class="h-5 w-5"></i> Print</button>
+            <button class="btn btn-ghost" id="copyReportBtn"><i data-lucide="copy" class="h-5 w-5"></i> Copy report</button>
             <button class="btn btn-primary" id="openLeadBtn"><i data-lucide="send" class="h-5 w-5"></i> Send enquiry</button>
           </div>
         </div>
@@ -459,6 +460,7 @@
       $("nextBtn").addEventListener("click", () => move(1));
       $("saveDraftBtn").addEventListener("click", saveDraft);
       $("printBtn").addEventListener("click", () => window.print());
+      $("copyReportBtn").addEventListener("click", copyReport);
       $("openLeadBtn").addEventListener("click", openLeadModal);
       $("submitLeadBtn").addEventListener("click", submitLead);
       $("emailDraftBtn").addEventListener("click", openEmailDraft);
@@ -643,6 +645,26 @@
 
     function openEmailDraft() {
       location.href = `mailto:${config.contactEmail}?subject=Cultural%20Needs%20Analysis%20enquiry&body=${reportText()}`;
+    }
+
+    async function copyReport() {
+      const text = reportPlainText();
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (err) {
+        const fallback = document.createElement("textarea");
+        fallback.value = text;
+        fallback.setAttribute("readonly", "");
+        fallback.style.position = "fixed";
+        fallback.style.opacity = "0";
+        document.body.appendChild(fallback);
+        fallback.select();
+        document.execCommand("copy");
+        fallback.remove();
+      }
+      $("copyReportBtn").innerHTML = `<i data-lucide="check" class="h-5 w-5"></i> Copied`;
+      lucide.createIcons();
+      setTimeout(() => { $("copyReportBtn").innerHTML = `<i data-lucide="copy" class="h-5 w-5"></i> Copy report`; lucide.createIcons(); }, 1800);
     }
 
     function openLeadModal() {
