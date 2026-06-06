@@ -403,6 +403,7 @@
           <div class="no-print flex flex-wrap gap-2">
             <button class="btn btn-ghost" id="printBtn"><i data-lucide="printer" class="h-5 w-5"></i> Print</button>
             <button class="btn btn-ghost" id="copyReportBtn"><i data-lucide="copy" class="h-5 w-5"></i> Copy report</button>
+            <button class="btn btn-ghost" id="emailReportBtn"><i data-lucide="mail" class="h-5 w-5"></i> Email report</button>
             <button class="btn btn-primary" id="openLeadBtn"><i data-lucide="send" class="h-5 w-5"></i> Send enquiry</button>
           </div>
         </div>
@@ -461,6 +462,7 @@
       $("saveDraftBtn").addEventListener("click", saveDraft);
       $("printBtn").addEventListener("click", () => window.print());
       $("copyReportBtn").addEventListener("click", copyReport);
+      $("emailReportBtn").addEventListener("click", openEmailDraft);
       $("openLeadBtn").addEventListener("click", openLeadModal);
       $("submitLeadBtn").addEventListener("click", submitLead);
       $("emailDraftBtn").addEventListener("click", openEmailDraft);
