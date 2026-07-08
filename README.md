@@ -38,4 +38,4 @@ To connect Speaking in Colour HubSpot:
 4. Make sure the HubSpot form includes the standard fields `email`, `firstname`, `company`, `jobtitle`, and `message`.
 5. Optional: create custom HubSpot properties if you want maturity level, score, aspiration, priorities and consent stored as separate fields, then paste those property names into the blank optional entries in `hubspot.fields`.
 
-If no HubSpot form IDs are configured, the page still saves the lead payload in the browser and opens the email handoff as a fallback.
+If no HubSpot form IDs are configured, the page still saves the lead payload in the browser, copies the report handoff, and opens the Calendly booking step as the fallback. This keeps the public tool usable without preparing or sending email drafts.
