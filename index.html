@@ -418,7 +418,7 @@
         <div class="no-print mt-8 flex flex-col-reverse gap-3 border-t border-[color:var(--line)] pt-5 sm:flex-row sm:justify-between">
           <button class="btn btn-ghost" id="prevBtn" type="button"><i data-lucide="arrow-left" class="h-5 w-5"></i> Previous</button>
           <div class="flex flex-col gap-3 sm:flex-row">
-            <button class="btn btn-ghost" id="emailDraftBtn" type="button"><i data-lucide="mail" class="h-5 w-5"></i> Email draft</button>
+            <button class="btn btn-ghost" id="emailDraftBtn" type="button"><i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy handoff</button>
             <button class="btn btn-primary" id="nextBtn" type="button">Next <i data-lucide="arrow-right" class="h-5 w-5"></i></button>
           </div>
         </div>
@@ -436,7 +436,7 @@
           <div class="no-print flex flex-wrap gap-2">
             <button class="btn btn-ghost" id="printBtn"><i data-lucide="printer" class="h-5 w-5"></i> Print</button>
             <button class="btn btn-ghost" id="copyReportBtn"><i data-lucide="copy" class="h-5 w-5"></i> Copy report</button>
-            <button class="btn btn-ghost" id="emailReportBtn"><i data-lucide="mail" class="h-5 w-5"></i> Email report</button>
+            <button class="btn btn-ghost" id="emailReportBtn"><i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy handoff</button>
             <button class="btn btn-primary" id="openLeadBtn"><i data-lucide="send" class="h-5 w-5"></i> Send enquiry</button>
           </div>
         </div>
@@ -495,10 +495,10 @@
       $("saveDraftBtn").addEventListener("click", saveDraft);
       $("printBtn").addEventListener("click", () => window.print());
       $("copyReportBtn").addEventListener("click", copyReport);
-      $("emailReportBtn").addEventListener("click", openEmailDraft);
+      $("emailReportBtn").addEventListener("click", copyReport);
       $("openLeadBtn").addEventListener("click", openLeadModal);
       $("submitLeadBtn").addEventListener("click", submitLead);
-      $("emailDraftBtn").addEventListener("click", openEmailDraft);
+      $("emailDraftBtn").addEventListener("click", copyReport);
       render();
       lucide.createIcons();
     }
@@ -680,12 +680,7 @@
       return lines.join("\n");
     }
 
-    function openEmailDraft() {
-      location.href = `mailto:${config.contactEmail}?subject=Cultural%20Needs%20Analysis%20enquiry&body=${reportText()}`;
-    }
-
-    async function copyReport() {
-      const text = reportPlainText();
+    async function copyTextToClipboard(text) {
       try {
         await navigator.clipboard.writeText(text);
       } catch (err) {
@@ -699,6 +694,11 @@
         document.execCommand("copy");
         fallback.remove();
       }
+    }
+
+    async function copyReport() {
+      const text = reportPlainText();
+      await copyTextToClipboard(text);
       $("copyReportBtn").innerHTML = `<i data-lucide="check" class="h-5 w-5"></i> Copied`;
       lucide.createIcons();
       setTimeout(() => { $("copyReportBtn").innerHTML = `<i data-lucide="copy" class="h-5 w-5"></i> Copy report`; lucide.createIcons(); }, 1800);
@@ -769,9 +769,10 @@
           console.warn(err);
         }
       }
-      $("leadStatus").innerHTML = `HubSpot form IDs are not configured yet. Opening an email handoff now, and the lead payload has been saved in this browser.`;
       localStorage.setItem("cnaLeadPayloadV1", JSON.stringify(lead));
-      openEmailDraft();
+      await copyTextToClipboard(reportPlainText(lead.notes));
+      $("leadStatus").innerHTML = `HubSpot form IDs are not configured yet. The lead packet has been copied and saved in this browser. Opening Calendly as the next handoff step.`;
+      window.open(config.calendlyUrl, "_blank", "noopener");
     }
 
     init();
