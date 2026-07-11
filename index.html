@@ -155,6 +155,29 @@
         "Maximise the Impact of Aboriginal Procurement - Understand how procurement decisions can create broader social, cultural and economic outcomes by supporting Aboriginal businesses, employment and community development.",
         "Embed the Social Dimension of ESG Through Aboriginal Engagement - Strengthen your organisation's social impact by aligning stakeholder engagement, community partnerships, procurement and employment initiatives with broader Environmental, Social and Governance (ESG) commitments."
       ],
+      advisoryPackages: [
+        {
+          id: "debrief",
+          name: "CNA Debrief Session",
+          priceLabel: "30 minute strategy session",
+          bestFor: "Incomplete or early-stage assessments that need a practical first conversation.",
+          outcome: "Confirm the priority area, readiness level and one recommended next step before deeper advisory work."
+        },
+        {
+          id: "workshop",
+          name: "Cultural Capability Workshop Scope",
+          priceLabel: "Workshop or team advisory scope",
+          bestFor: "Teams with clear priorities around training, leadership confidence, RAP planning or cultural safety.",
+          outcome: "Shape a targeted workshop brief with audience, objectives, maturity gap and expected outcomes."
+        },
+        {
+          id: "sprint",
+          name: "Strategic Implementation Sprint",
+          priceLabel: "Advisory sprint scope",
+          bestFor: "Organisations with stronger completion signals and multiple priority areas needing governance, measurement or implementation support.",
+          outcome: "Turn the CNA result into a sequenced action plan, stakeholder map and implementation rhythm."
+        }
+      ],
       services: [
         "Governance and Foundations - Acknowledgement of Country Protocols and Handbook: Develop a practical organisational guide that supports staff to confidently and respectfully deliver Acknowledgements of Country, understand when they are required, and recognise the importance of local cultural protocols.",
         "Governance and Foundations - Terminology and Communication Guide: Create and embed a terminology guide that provides clear, culturally appropriate language, preferred terminology, and communication principles to support consistency across internal and external communications.",
@@ -436,6 +459,7 @@
           <div class="no-print flex flex-wrap gap-2">
             <button class="btn btn-ghost" id="printBtn"><i data-lucide="printer" class="h-5 w-5"></i> Print</button>
             <button class="btn btn-ghost" id="copyReportBtn"><i data-lucide="copy" class="h-5 w-5"></i> Copy report</button>
+            <button class="btn btn-ghost" id="copyBriefBtn"><i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy advisory brief</button>
             <button class="btn btn-ghost" id="emailReportBtn"><i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy handoff</button>
             <button class="btn btn-primary" id="openLeadBtn"><i data-lucide="send" class="h-5 w-5"></i> Send enquiry</button>
           </div>
@@ -445,6 +469,7 @@
       <aside class="panel h-fit p-5 sm:p-6">
         <h3 class="text-xl font-extrabold">Recommended advisory pathway</h3>
         <p class="mt-2 leading-7 text-[color:var(--muted)]">Use this as a conversion bridge from assessment into strategy, training, coaching, RAP and organisational development services.</p>
+        <div id="commercialPathway" class="mt-4 rounded-lg border border-[color:var(--line)] bg-[#fffefb] p-4"></div>
         <ul id="serviceList" class="mt-4 space-y-3"></ul>
         <a class="btn btn-primary mt-5 w-full" id="sideCalendly" target="_blank" rel="noopener"><i data-lucide="calendar" class="h-5 w-5"></i> Book Calendly session</a>
       </aside>
@@ -495,6 +520,7 @@
       $("saveDraftBtn").addEventListener("click", saveDraft);
       $("printBtn").addEventListener("click", () => window.print());
       $("copyReportBtn").addEventListener("click", copyReport);
+      $("copyBriefBtn").addEventListener("click", copyAdvisoryBrief);
       $("emailReportBtn").addEventListener("click", copyReport);
       $("openLeadBtn").addEventListener("click", openLeadModal);
       $("submitLeadBtn").addEventListener("click", submitLead);
@@ -612,6 +638,13 @@
       const contactEmail = state.answers["future.contactEmail"]?.text;
       const organisation = state.answers["future.organisation"]?.text;
       const consent = state.answers["future.distributionConsent"]?.checked;
+      const commercial = recommendedCommercialPathway(r, priority);
+      $("commercialPathway").innerHTML = `
+        <p class="text-sm font-bold uppercase tracking-[.16em] text-[color:var(--ochre)]">Commercial next step</p>
+        <h4 class="mt-2 text-lg font-extrabold">${escapeHtml(commercial.name)}</h4>
+        <p class="mt-1 text-sm font-bold text-[color:var(--primary)]">${escapeHtml(commercial.priceLabel)}</p>
+        <p class="mt-2 text-sm leading-6 text-[color:var(--muted)]">${escapeHtml(commercial.bestFor)}</p>
+      `;
       $("reportContent").innerHTML = `
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="rounded-lg bg-[color:var(--soft)] p-4"><p class="text-sm font-bold text-[color:var(--muted)]">Current maturity</p><p class="mt-1 text-2xl font-extrabold">${r.level.name}</p><p class="text-sm">${r.score}/100</p></div>
@@ -626,8 +659,17 @@
         <h3>Future focus</h3><p><strong>Challenge:</strong> ${escapeHtml(challenge || "Not yet captured.")}</p><p><strong>Opportunity:</strong> ${escapeHtml(opportunity || "Not yet captured.")}</p>
         <h3>Contact details</h3><p><strong>Name:</strong> ${escapeHtml(contactName || "Not captured.")}</p><p><strong>Email:</strong> ${escapeHtml(contactEmail || "Not captured.")}</p><p><strong>Organisation:</strong> ${escapeHtml(organisation || "Not captured.")}</p><p><strong>Distribution list:</strong> ${consent ? "Consent given" : "Not selected"}</p>
         <h3>Priority support areas</h3>${listOrNote(priority, "No priority areas selected yet.")}
+        <h3>Commercial next step</h3><p><strong>${escapeHtml(commercial.name)}</strong> - ${escapeHtml(commercial.priceLabel)}. ${escapeHtml(commercial.outcome)}</p>
         <h3>Suggested advisory services</h3>${listOrNote(config.services, "")}
       `;
+    }
+
+    function recommendedCommercialPathway(report, priorities = []) {
+      const packages = config.advisoryPackages || [];
+      if (!packages.length) return { name: "Advisory follow-up", priceLabel: "Scope to confirm", bestFor: "CNA follow-up", outcome: "Confirm the right next step." };
+      if (report.answeredScoreQuestions < Math.ceil(report.totalScoreQuestions * 0.55)) return packages[0];
+      if (report.score >= 62 && priorities.length >= 3) return packages[2];
+      return packages[1] || packages[0];
     }
 
     function listOrNote(items, note) {
@@ -652,6 +694,8 @@
     function reportPlainText(extraNotes = "") {
       const r = scoreReport();
       const recommendedActions = config.recommendedActions?.length ? config.recommendedActions : r.level.next;
+      const priorityAreas = state.answers["future.priorities"]?.values || [];
+      const commercial = recommendedCommercialPathway(r, priorityAreas);
       const lines = [
         "Cultural Needs Analysis enquiry",
         "",
@@ -665,7 +709,9 @@
         `Aspirational maturity: ${r.aspirational.name}`,
         `Completion: ${r.answeredScoreQuestions}/${r.totalScoreQuestions} scored prompts`,
         "",
-        `Priority areas: ${(state.answers["future.priorities"]?.values || []).join(", ") || "Not selected"}`,
+        `Priority areas: ${priorityAreas.join(", ") || "Not selected"}`,
+        `Recommended commercial next step: ${commercial.name} (${commercial.priceLabel})`,
+        `Commercial outcome: ${commercial.outcome}`,
         "",
         `Challenge: ${state.answers["future.challenge"]?.text || "Not captured"}`,
         `Opportunity: ${state.answers["future.opportunity"]?.text || "Not captured"}`,
@@ -678,6 +724,30 @@
       ];
       if (extraNotes) lines.push("", `Additional notes: ${extraNotes}`);
       return lines.join("\n");
+    }
+
+    function advisoryBriefText() {
+      const r = scoreReport();
+      const priorityAreas = state.answers["future.priorities"]?.values || [];
+      const commercial = recommendedCommercialPathway(r, priorityAreas);
+      return [
+        "CNA advisory approval brief",
+        "",
+        `Organisation: ${state.answers["future.organisation"]?.text || "Not captured"}`,
+        `Contact: ${state.answers["future.contactName"]?.text || "Not captured"} <${state.answers["future.contactEmail"]?.text || "not captured"}>`,
+        `Role / team: ${state.answers["future.role"]?.text || "Not captured"}`,
+        "",
+        `Assessment signal: ${r.level.name} (${r.score}/100), ${r.answeredScoreQuestions}/${r.totalScoreQuestions} scored prompts complete`,
+        `Aspirational level: ${r.aspirational.name}`,
+        `Priority areas: ${priorityAreas.join(", ") || "Not selected"}`,
+        "",
+        `Recommended pathway: ${commercial.name}`,
+        `Scope marker: ${commercial.priceLabel}`,
+        `Why this pathway: ${commercial.bestFor}`,
+        `Expected outcome: ${commercial.outcome}`,
+        "",
+        "Approval-safe next action: book the Calendly strategy session or ask Speaking in Colour to scope this pathway. This tool has not sent an email, invoice or payment request."
+      ].join("\n");
     }
 
     async function copyTextToClipboard(text) {
@@ -702,6 +772,13 @@
       $("copyReportBtn").innerHTML = `<i data-lucide="check" class="h-5 w-5"></i> Copied`;
       lucide.createIcons();
       setTimeout(() => { $("copyReportBtn").innerHTML = `<i data-lucide="copy" class="h-5 w-5"></i> Copy report`; lucide.createIcons(); }, 1800);
+    }
+
+    async function copyAdvisoryBrief() {
+      await copyTextToClipboard(advisoryBriefText());
+      $("copyBriefBtn").innerHTML = `<i data-lucide="check" class="h-5 w-5"></i> Brief copied`;
+      lucide.createIcons();
+      setTimeout(() => { $("copyBriefBtn").innerHTML = `<i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy advisory brief`; lucide.createIcons(); }, 1800);
     }
 
     function openLeadModal() {
