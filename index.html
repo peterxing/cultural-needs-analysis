@@ -460,6 +460,7 @@
             <button class="btn btn-ghost" id="printBtn"><i data-lucide="printer" class="h-5 w-5"></i> Print</button>
             <button class="btn btn-ghost" id="copyReportBtn"><i data-lucide="copy" class="h-5 w-5"></i> Copy report</button>
             <button class="btn btn-ghost" id="copyBriefBtn"><i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy advisory brief</button>
+            <button class="btn btn-ghost" id="downloadPacketBtn"><i data-lucide="download" class="h-5 w-5"></i> Download lead packet</button>
             <button class="btn btn-ghost" id="emailReportBtn"><i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy handoff</button>
             <button class="btn btn-primary" id="openLeadBtn"><i data-lucide="send" class="h-5 w-5"></i> Send enquiry</button>
           </div>
@@ -521,6 +522,7 @@
       $("printBtn").addEventListener("click", () => window.print());
       $("copyReportBtn").addEventListener("click", copyReport);
       $("copyBriefBtn").addEventListener("click", copyAdvisoryBrief);
+      $("downloadPacketBtn").addEventListener("click", downloadLeadPacket);
       $("emailReportBtn").addEventListener("click", copyReport);
       $("openLeadBtn").addEventListener("click", openLeadModal);
       $("submitLeadBtn").addEventListener("click", submitLead);
@@ -750,6 +752,46 @@
       ].join("\n");
     }
 
+    function leadPacketPayload(extraNotes = "") {
+      const r = scoreReport();
+      const priorityAreas = state.answers["future.priorities"]?.values || [];
+      const commercial = recommendedCommercialPathway(r, priorityAreas);
+      return {
+        generatedAt: new Date().toISOString(),
+        source: config.leadSource,
+        page: location.href,
+        contact: {
+          name: state.answers["future.contactName"]?.text || "",
+          email: state.answers["future.contactEmail"]?.text || "",
+          organisation: state.answers["future.organisation"]?.text || "",
+          role: state.answers["future.role"]?.text || "",
+          distributionConsent: Boolean(state.answers["future.distributionConsent"]?.checked)
+        },
+        assessment: {
+          currentMaturity: r.level.name,
+          score: r.score,
+          aspirationalMaturity: r.aspirational.name,
+          answeredScoreQuestions: r.answeredScoreQuestions,
+          totalScoreQuestions: r.totalScoreQuestions,
+          priorityAreas,
+          challenge: state.answers["future.challenge"]?.text || "",
+          opportunity: state.answers["future.opportunity"]?.text || ""
+        },
+        recommendedPathway: commercial,
+        advisoryBrief: advisoryBriefText(),
+        report: reportPlainText(extraNotes),
+        answers: state.answers
+      };
+    }
+
+    function filenameSafe(value) {
+      return String(value || "cna-lead")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 64) || "cna-lead";
+    }
+
     async function copyTextToClipboard(text) {
       try {
         await navigator.clipboard.writeText(text);
@@ -779,6 +821,23 @@
       $("copyBriefBtn").innerHTML = `<i data-lucide="check" class="h-5 w-5"></i> Brief copied`;
       lucide.createIcons();
       setTimeout(() => { $("copyBriefBtn").innerHTML = `<i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy advisory brief`; lucide.createIcons(); }, 1800);
+    }
+
+    function downloadLeadPacket() {
+      const packet = leadPacketPayload();
+      const blob = new Blob([JSON.stringify(packet, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const org = packet.contact.organisation || packet.contact.name || "cna-lead";
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${filenameSafe(org)}-cna-lead-packet.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      $("downloadPacketBtn").innerHTML = `<i data-lucide="check" class="h-5 w-5"></i> Packet saved`;
+      lucide.createIcons();
+      setTimeout(() => { $("downloadPacketBtn").innerHTML = `<i data-lucide="download" class="h-5 w-5"></i> Download lead packet`; lucide.createIcons(); }, 1800);
     }
 
     function openLeadModal() {
@@ -846,9 +905,9 @@
           console.warn(err);
         }
       }
-      localStorage.setItem("cnaLeadPayloadV1", JSON.stringify(lead));
+      localStorage.setItem("cnaLeadPayloadV1", JSON.stringify({ ...lead, leadPacket: leadPacketPayload(lead.notes) }));
       await copyTextToClipboard(reportPlainText(lead.notes));
-      $("leadStatus").innerHTML = `HubSpot form IDs are not configured yet. The lead packet has been copied and saved in this browser. Opening Calendly as the next handoff step.`;
+      $("leadStatus").innerHTML = `HubSpot form IDs are not configured yet. The lead packet has been copied and saved in this browser. Use Download lead packet for a portable non-email handoff. Opening Calendly as the next step.`;
       window.open(config.calendlyUrl, "_blank", "noopener");
     }
 
