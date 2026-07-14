@@ -269,8 +269,8 @@
           title: "Leadership and Organisational Commitment",
           intro: "Explore how leadership, governance and communication create the conditions for sustained cultural capability.",
           questions: [
-            { id: "advocacy", type: "scale", label: "Leadership actively advocates for Aboriginal and Torres Strait Islander cultural capability." },
-            { id: "strategy", type: "scale", label: "Cultural capability is connected to organisational strategy and decision-making." },
+            { id: "advocacy", type: "scale", scaleLegend: "1 = started, 2 = emerging, 3 = developing, 4 = refining, 5 = embedded and impact-led", label: "Leadership actively advocates for Aboriginal and Torres Strait Islander cultural capability." },
+            { id: "strategy", type: "scale", scaleLegend: "1 = started, 2 = emerging, 3 = developing, 4 = refining, 5 = embedded and impact-led", label: "Cultural capability is connected to organisational strategy and decision-making." },
             { id: "structures", type: "check", scoreMode: "sum", maxPoints: 21, noneOption: "None of these structures or targets are currently in place.", actionIds: ["cultural-risk-opportunity", "communication-framework", "employment-strategy", "procurement-impact"], serviceIds: ["terminology-guide", "risk-opportunity-mapping", "employment-advisory", "procurement-advisory"], label: "Which structures or targets are in place or emerging?", options: [
               ["RAP working group or champion network", 3], ["Executive sponsor", 3], ["Aboriginal employment target", 3], ["Aboriginal procurement target", 3], ["Cultural governance or advisory group", 3], ["Regular internal communication", 3], ["Board or senior leadership reporting", 3], ["Dedicated budget or resourcing", 3], ["None of these structures or targets are currently in place.", 0]
             ]},
@@ -571,7 +571,8 @@
         }).join("")}</div></fieldset>`;
       }
       if (q.type === "scale") {
-        return base + `<div class="scale mt-4 flex flex-wrap gap-2" role="radiogroup" aria-label="${q.label}">${[1,2,3,4,5].map(n => `<label class="scale-choice"><input class="sr-only" type="radio" name="${key}" value="${n}" data-label="${n} out of 5" ${Number(value?.score) === n ? "checked" : ""}/> ${n}</label>`).join("")}</div><p class="mt-3 text-sm text-[color:var(--muted)]">1 = emerging, 3 = developing, 5 = embedded and impact-led</p></fieldset>`;
+        const scaleLegend = q.scaleLegend || "1 = emerging, 3 = developing, 5 = embedded and impact-led";
+        return base + `<div class="scale mt-4 flex flex-wrap gap-2" role="radiogroup" aria-label="${q.label}">${[1,2,3,4,5].map(n => `<label class="scale-choice"><input class="sr-only" type="radio" name="${key}" value="${n}" data-label="${n} out of 5" ${Number(value?.score) === n ? "checked" : ""}/> ${n}</label>`).join("")}</div><p class="mt-3 text-sm text-[color:var(--muted)]">${escapeHtml(scaleLegend)}</p></fieldset>`;
       }
       if (q.type === "check") {
         const selected = value?.values || [];

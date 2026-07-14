@@ -122,3 +122,18 @@ test("plain-text reports retain qualitative ratings without adding them to the p
   assert.match(report, /Examples supplied:/);
   assert.match(report, /Quarterly belonging survey and retention review\./);
 });
+
+test("shows the requested five-point legend under both leadership rating questions", () => {
+  const sandbox = appContext();
+  const expected = "1 = started, 2 = emerging, 3 = developing, 4 = refining, 5 = embedded and impact-led";
+  const rendered = vm.runInContext(`[
+    "advocacy",
+    "strategy"
+  ].map(id => renderQuestion(
+    config.sections.find(section => section.id === "leadership"),
+    config.sections.find(section => section.id === "leadership").questions.find(question => question.id === id)
+  ))`, sandbox);
+
+  assert.equal(rendered.length, 2);
+  for (const questionHtml of rendered) assert.match(questionHtml, new RegExp(expected));
+});
