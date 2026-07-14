@@ -464,6 +464,7 @@
             <button class="btn btn-ghost" id="printBtn"><i data-lucide="printer" class="h-5 w-5"></i> Print</button>
             <button class="btn btn-ghost" id="copyReportBtn"><i data-lucide="copy" class="h-5 w-5"></i> Copy report</button>
             <button class="btn btn-ghost" id="copyBriefBtn"><i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy advisory brief</button>
+            <button class="btn btn-ghost" id="copySessionBriefBtn"><i data-lucide="file-check-2" class="h-5 w-5"></i> Copy session brief</button>
             <button class="btn btn-ghost" id="downloadPacketBtn"><i data-lucide="download" class="h-5 w-5"></i> Download lead packet</button>
             <button class="btn btn-ghost" id="emailReportBtn"><i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy handoff</button>
             <button class="btn btn-primary" id="openLeadBtn"><i data-lucide="send" class="h-5 w-5"></i> Send enquiry</button>
@@ -528,6 +529,7 @@
       $("printBtn").addEventListener("click", () => window.print());
       $("copyReportBtn").addEventListener("click", copyReport);
       $("copyBriefBtn").addEventListener("click", copyAdvisoryBrief);
+      $("copySessionBriefBtn").addEventListener("click", copySessionBrief);
       $("downloadPacketBtn").addEventListener("click", downloadLeadPacket);
       $("emailReportBtn").addEventListener("click", copyReport);
       $("openLeadBtn").addEventListener("click", openLeadModal);
@@ -806,6 +808,39 @@
       ].join("\n");
     }
 
+    function sessionBriefText() {
+      const r = scoreReport();
+      const tailored = tailoredReportData(r);
+      const priorityAreas = state.answers["future.priorities"]?.values || [];
+      const commercial = recommendedCommercialPathway(r, priorityAreas);
+      const evidenceGaps = tailored.evidenceGaps.slice(0, 5);
+      return [
+        "CNA paid-session facilitator brief",
+        "",
+        `Organisation: ${state.answers["future.organisation"]?.text || "Not captured"}`,
+        `Participant: ${state.answers["future.contactName"]?.text || "Not captured"} (${state.answers["future.role"]?.text || "role not captured"})`,
+        `Current result: ${r.level.name} - ${r.score}/${r.maxScore} points across ${r.answeredScoreQuestions}/${r.totalScoreQuestions} scored prompts`,
+        `Aspiration: ${r.aspirational.name}`,
+        "",
+        `Recommended paid pathway: ${commercial.name}`,
+        `Scope marker: ${commercial.priceLabel}`,
+        `Session outcome to confirm: ${commercial.outcome}`,
+        "",
+        "Priority areas:",
+        ...(priorityAreas.length ? priorityAreas.map(item => `- ${item}`) : ["- Ask participant to choose 1-3 priority areas before scoping."]),
+        "",
+        "Evidence gaps to explore:",
+        ...(evidenceGaps.length ? evidenceGaps.map(item => `- ${item}`) : ["- Complete more scored prompts before a deeper advisory scope."]),
+        "",
+        "Pre-session questions:",
+        `- What is the highest-risk gap to address in the next 90 days: ${tailored.actions[0] || "not yet identified"}?`,
+        `- Who needs to approve or participate in the next step for ${commercial.name}?`,
+        "- What existing documents, RAP commitments, procurement targets or training records should be reviewed before the session?",
+        "",
+        "Non-email handoff: copy this into a CRM note, booking note or meeting agenda. The tool has not sent email, created a draft, issued an invoice or requested payment."
+      ].join("\n");
+    }
+
     function leadPacketPayload(extraNotes = "") {
       const r = scoreReport();
       const tailored = tailoredReportData(r);
@@ -844,6 +879,7 @@
         suggestedAdvisoryServices: tailored.services,
         recommendedPathway: commercial,
         advisoryBrief: advisoryBriefText(),
+        sessionBrief: sessionBriefText(),
         report: reportPlainText(extraNotes),
         answers: state.answers
       };
@@ -886,6 +922,13 @@
       $("copyBriefBtn").innerHTML = `<i data-lucide="check" class="h-5 w-5"></i> Brief copied`;
       lucide.createIcons();
       setTimeout(() => { $("copyBriefBtn").innerHTML = `<i data-lucide="clipboard-check" class="h-5 w-5"></i> Copy advisory brief`; lucide.createIcons(); }, 1800);
+    }
+
+    async function copySessionBrief() {
+      await copyTextToClipboard(sessionBriefText());
+      $("copySessionBriefBtn").innerHTML = `<i data-lucide="check" class="h-5 w-5"></i> Session brief copied`;
+      lucide.createIcons();
+      setTimeout(() => { $("copySessionBriefBtn").innerHTML = `<i data-lucide="file-check-2" class="h-5 w-5"></i> Copy session brief`; lucide.createIcons(); }, 1800);
     }
 
     function downloadLeadPacket() {

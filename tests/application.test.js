@@ -150,3 +150,23 @@ test("recommended next steps have one line of separation between items", () => {
     /<h3>Recommended next steps<\/h3>\$\{listOrNote\(tailored\.actions, [^}]+, "recommended-next-steps"\)\}/
   );
 });
+
+test("session brief creates a non-email paid-session handoff", () => {
+  const sandbox = appContext({
+    "future.organisation": { text: "Example Health" },
+    "future.contactName": { text: "Avery" },
+    "future.role": { text: "People and Culture" },
+    "future.priorities": { values: ["Leadership coaching", "RAP planning or refresh"] },
+    "impact.procurement": { values: ["We have a procurement target."] },
+    "impact.measurement": { label: "Mostly activity counts", score: 1 }
+  });
+  const brief = vm.runInContext("sessionBriefText()", sandbox);
+  const packet = vm.runInContext("leadPacketPayload()", sandbox);
+
+  assert.match(brief, /CNA paid-session facilitator brief/);
+  assert.match(brief, /Recommended paid pathway:/);
+  assert.match(brief, /Pre-session questions:/);
+  assert.match(brief, /The tool has not sent email, created a draft, issued an invoice or requested payment\./);
+  assert.equal(packet.sessionBrief, brief);
+  assert.match(html, /id="copySessionBriefBtn"/);
+});
