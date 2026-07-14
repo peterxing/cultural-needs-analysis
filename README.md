@@ -20,9 +20,35 @@ Common edits:
 - HubSpot form connection: `hubspot.portalId` and `hubspot.formGuid`
 - HubSpot field mapping: `hubspot.fields`
 - Section headings and intro copy: `sections[].title` and `sections[].intro`
-- Questions and options: `sections[].questions`
+- Questions, answer points and score modes: `sections[].questions`
 - Maturity level descriptions: `levels`
-- Suggested services: `services`
+- Recommended actions and suggested services: edit each item's `text`
+
+## Scoring rubric
+
+The assessment uses the 98-point rubric supplied in the CNA survey workbook:
+
+- Seedling: 0-26
+- Growing: 27-45
+- Grounded: 46-65
+- Thriving: 66-83
+- Regenerative: 84-98
+
+Scored questions declare a `scoreMode` in `window.CNA_CONFIG`:
+
+- `sum` adds selected evidence points, up to any configured `maxPoints` cap.
+- `max` uses only the highest selected progressive milestone.
+- `choice` uses the points attached to the selected radio option.
+
+Questions without `scoreMode` remain qualitative and do not change category placement. The scoring and tailored-evidence functions live in `scoring.js`; the browser report uses them to recognise selected evidence, identify missing evidence and choose mapped next actions and services.
+
+Evidence checkbox groups include an explicit zero-point "none currently in place" answer so participants can distinguish a genuine zero from an unanswered question. Those answers are mutually exclusive with positive evidence selections. High and low qualitative ratings, plus the two implementation text examples, appear in the report without changing the 98-point category score.
+
+Run the regression suite after changing points, thresholds or report logic:
+
+```powershell
+node --test tests/*.test.js
+```
 
 Keep the quote marks and commas intact. If the page breaks after an edit, revert the last commit in GitHub.
 
