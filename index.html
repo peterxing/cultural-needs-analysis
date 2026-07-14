@@ -105,6 +105,7 @@
     .report-prose h3 { font-size: 1rem; font-weight: 800; margin-top: 1rem; color: var(--primary); }
     .report-prose ul { margin: .4rem 0 0; padding-left: 1.1rem; }
     .report-prose li { margin: .24rem 0; }
+    .report-prose .recommended-next-steps li + li { margin-top: 1rem; }
     @media print {
       header, .no-print, #assessmentNav, #leadCapture { display: none !important; }
       body { background: white; }
@@ -687,7 +688,7 @@
         <h3>Examples supplied</h3>${listOrNote(tailored.narrativeEvidence.slice(0, 6), "No implementation examples have been supplied yet.")}
         <h3>Strongest evidence areas</h3>${listOrNote(strengths.map(s => `${s.title}: ${Math.round(s.percent)}% of available evidence points`), "Complete more of the assessment to reveal strength areas.")}
         <h3>Priority growth areas</h3>${listOrNote(growth.map(s => `${s.title}: ${Math.round(s.percent)}% of available evidence points`), "Complete more of the assessment to reveal growth opportunities.")}
-        <h3>Recommended next steps</h3>${listOrNote(tailored.actions, "Complete more scored prompts to generate tailored next steps.")}
+        <h3>Recommended next steps</h3>${listOrNote(tailored.actions, "Complete more scored prompts to generate tailored next steps.", "recommended-next-steps")}
         <h3>Future focus</h3><p><strong>Challenge:</strong> ${escapeHtml(challenge || "Not yet captured.")}</p><p><strong>Opportunity:</strong> ${escapeHtml(opportunity || "Not yet captured.")}</p>
         <h3>Contact details</h3><p><strong>Name:</strong> ${escapeHtml(contactName || "Not captured.")}</p><p><strong>Email:</strong> ${escapeHtml(contactEmail || "Not captured.")}</p><p><strong>Organisation:</strong> ${escapeHtml(organisation || "Not captured.")}</p><p><strong>Distribution list:</strong> ${consent ? "Consent given" : "Not selected"}</p>
         <h3>Priority support areas</h3>${listOrNote(priority, "No priority areas selected yet.")}
@@ -704,8 +705,9 @@
       return packages[1] || packages[0];
     }
 
-    function listOrNote(items, note) {
-      return items && items.length ? `<ul>${items.map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>` : `<p>${note}</p>`;
+    function listOrNote(items, note, className = "") {
+      const classAttribute = className ? ` class="${escapeHtml(className)}"` : "";
+      return items && items.length ? `<ul${classAttribute}>${items.map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>` : `<p>${note}</p>`;
     }
 
     function escapeHtml(value) {

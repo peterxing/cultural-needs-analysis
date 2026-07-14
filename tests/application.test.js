@@ -135,3 +135,18 @@ test("shows the requested five-point legend under every one-to-five rating quest
   assert.equal(rendered.length, 9);
   for (const questionHtml of rendered) assert.match(questionHtml, new RegExp(expected));
 });
+
+test("recommended next steps have one line of separation between items", () => {
+  const sandbox = appContext();
+  const rendered = vm.runInContext(
+    `listOrNote(["First action", "Second action"], "No actions", "recommended-next-steps")`,
+    sandbox
+  );
+
+  assert.match(rendered, /^<ul class="recommended-next-steps">/);
+  assert.match(html, /\.recommended-next-steps li \+ li\s*\{\s*margin-top:\s*1rem;/);
+  assert.match(
+    html,
+    /<h3>Recommended next steps<\/h3>\$\{listOrNote\(tailored\.actions, [^}]+, "recommended-next-steps"\)\}/
+  );
+});
