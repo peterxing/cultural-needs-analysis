@@ -571,7 +571,7 @@
         }).join("")}</div></fieldset>`;
       }
       if (q.type === "scale") {
-        const scaleLegend = q.scaleLegend || "1 = emerging, 3 = developing, 5 = embedded and impact-led";
+        const scaleLegend = q.scaleLegend || "1 = started, 2 = emerging, 3 = developing, 4 = refining, 5 = embedded and impact-led";
         return base + `<div class="scale mt-4 flex flex-wrap gap-2" role="radiogroup" aria-label="${q.label}">${[1,2,3,4,5].map(n => `<label class="scale-choice"><input class="sr-only" type="radio" name="${key}" value="${n}" data-label="${n} out of 5" ${Number(value?.score) === n ? "checked" : ""}/> ${n}</label>`).join("")}</div><p class="mt-3 text-sm text-[color:var(--muted)]">${escapeHtml(scaleLegend)}</p></fieldset>`;
       }
       if (q.type === "check") {
