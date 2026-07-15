@@ -76,6 +76,15 @@ test("uses the workbook points for milestone and additive questions", () => {
   assert.equal(question(config, "impact", "procurement").scoreMode, "max");
 });
 
+test("uses reciprocal-first wording for the Aboriginal organisations question", () => {
+  const config = loadConfig();
+
+  assert.equal(
+    question(config, "community", "organisations").label,
+    "Reciprocal relationships with Aboriginal organisations and community partners are developing."
+  );
+});
+
 test("maps incomplete evidence to tailored actions and advisory services", () => {
   const config = loadConfig();
   const actionIds = new Set(config.recommendedActions.map(item => item.id));
