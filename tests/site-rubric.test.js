@@ -85,6 +85,19 @@ test("uses reciprocal-first wording for the Aboriginal organisations question", 
   );
 });
 
+test("offers community of practice as an emerging structure", () => {
+  const config = loadConfig();
+
+  assert.deepEqual(
+    Array.from(
+      question(config, "leadership", "structures").options.find(
+        option => option[0] === "Part of a Community of practice"
+      ) || []
+    ),
+    ["Part of a Community of practice", 3]
+  );
+});
+
 test("maps incomplete evidence to tailored actions and advisory services", () => {
   const config = loadConfig();
   const actionIds = new Set(config.recommendedActions.map(item => item.id));
