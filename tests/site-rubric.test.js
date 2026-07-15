@@ -98,6 +98,28 @@ test("offers community of practice as an emerging structure", () => {
   );
 });
 
+test("places cultural capability measurement directly after staff participation", () => {
+  const config = loadConfig();
+  const workforceQuestions = config.sections.find(section => section.id === "workforce").questions;
+  const participationIndex = workforceQuestions.findIndex(item => item.id === "participation");
+
+  assert.deepEqual(
+    Array.from(workforceQuestions.slice(participationIndex, participationIndex + 3), item => item.id),
+    ["participation", "capability", "capabilityMeasurement"]
+  );
+  assert.equal(question(config, "workforce", "capability").type, "scale");
+  assert.equal(question(config, "workforce", "capabilityMeasurement").type, "text");
+});
+
+test("uses cultural capability wording for the staff outcomes question", () => {
+  const config = loadConfig();
+
+  assert.equal(
+    question(config, "workforce", "capability").label,
+    "Staff cultural capability outcomes are measured beyond attendance numbers."
+  );
+});
+
 test("maps incomplete evidence to tailored actions and advisory services", () => {
   const config = loadConfig();
   const actionIds = new Set(config.recommendedActions.map(item => item.id));
@@ -139,6 +161,6 @@ test("offers an explicit zero-point answer when no checkbox evidence is in place
 test("includes the two implementation text responses as report evidence", () => {
   const config = loadConfig();
 
-  assert.equal(question(config, "impact", "capabilityMeasurement").reportEvidence, true);
+  assert.equal(question(config, "workforce", "capabilityMeasurement").reportEvidence, true);
   assert.equal(question(config, "impact", "communityImplementation").reportEvidence, true);
 });

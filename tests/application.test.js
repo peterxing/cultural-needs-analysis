@@ -110,7 +110,7 @@ test("plain-text reports retain qualitative ratings without adding them to the p
   const sandbox = appContext({
     "leadership.advocacy": { label: "5 out of 5", score: 5 },
     "leadership.strategy": { label: "2 out of 5", score: 2 },
-    "impact.capabilityMeasurement": { text: "Quarterly belonging survey and retention review." }
+    "workforce.capabilityMeasurement": { text: "Quarterly belonging survey and retention review." }
   });
   const report = vm.runInContext("reportPlainText()", sandbox);
 

@@ -295,6 +295,8 @@
             { id: "participation", type: "choice", label: "Approximately what proportion of staff have participated in cultural learning?", options: [
               ["Not yet known", 1], ["Under 25%", 2], ["25% to 50%", 3], ["50% to 80%", 4], ["Over 80%", 5]
             ]},
+            { id: "capability", type: "scale", label: "Staff cultural capability outcomes are measured beyond attendance numbers." },
+            { id: "capabilityMeasurement", type: "text", reportEvidence: true, label: "Please share how this is measured." },
             { id: "confidence", type: "scale", label: "Staff feel confident engaging respectfully with Aboriginal and Torres Strait Islander peoples, communities and knowledge." },
             { id: "belongingTracking", type: "check", scoreMode: "sum", noneOption: "We do not currently record or track these measures.", actionIds: ["employment-strategy"], serviceIds: ["employment-advisory"], label: "Which of the following do you currently record, track, or understand?", options: [
               ["We record and track how Aboriginal and Torres Strait Islander staff feel, their sense of belonging, and their measure of psychological safety.", 2],
@@ -346,8 +348,6 @@
               ["We can report over 4% spend with Aboriginal businesses.", 10],
               ["None of these procurement measures are currently in place.", 0]
             ]},
-            { id: "capability", type: "scale", label: "Staff capability outcomes are measured beyond attendance numbers." },
-            { id: "capabilityMeasurement", type: "text", reportEvidence: true, label: "Please share how this is measured." },
             { id: "communityOutcomes", type: "scale", label: "Community outcomes, feedback or shared value are considered when evaluating success." },
             { id: "communityImplementation", type: "text", reportEvidence: true, label: "Please share how this is implemented." },
             { id: "measurement", type: "choice", scoreMode: "choice", actionIds: ["esg-social", "cultural-risk-opportunity"], serviceIds: ["esg-advisory", "risk-opportunity-mapping"], label: "How mature is your impact measurement?", options: [
