@@ -98,6 +98,40 @@ test("offers community of practice as an emerging structure", () => {
   );
 });
 
+test("places documented policies directly after structures and targets", () => {
+  const config = loadConfig();
+  const leadershipQuestions = config.sections.find(section => section.id === "leadership").questions;
+  const structuresIndex = leadershipQuestions.findIndex(item => item.id === "structures");
+
+  assert.deepEqual(
+    Array.from(leadershipQuestions.slice(structuresIndex, structuresIndex + 3), item => item.id),
+    ["structures", "documentedPolicies", "commitment"]
+  );
+  assert.equal(question(config, "leadership", "documentedPolicies").type, "check");
+  assert.equal(
+    question(config, "leadership", "documentedPolicies").label,
+    "Do you have documented policies or procedures for:"
+  );
+});
+
+test("offers the requested documented policy and procedure options", () => {
+  const config = loadConfig();
+  const item = question(config, "leadership", "documentedPolicies");
+
+  assert.ok(item, "documented policies question should exist");
+  assert.deepEqual(Array.from(item.options), [
+    "Welcome to Country and Acknowledgement to Country protocol",
+    "Culturally Informed Communication guide",
+    "ICIP and cultural protocols guide",
+    "A Ethical Aboriginal Art Acquisition Processes",
+    "Managing Indigenous Cultural and Intellectual Property (ICIP) protocol",
+    "Aboriginal Employment Strategy",
+    "Aboriginal procurement strategy",
+    "Cultural education strategy"
+  ]);
+  assert.equal(item.scoreMode, undefined);
+});
+
 test("places cultural capability measurement directly after staff participation", () => {
   const config = loadConfig();
   const workforceQuestions = config.sections.find(section => section.id === "workforce").questions;
