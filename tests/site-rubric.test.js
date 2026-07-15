@@ -98,25 +98,26 @@ test("offers community of practice as an emerging structure", () => {
   );
 });
 
-test("places documented policies directly after structures and targets", () => {
+test("places documented policies directly after current work drivers", () => {
   const config = loadConfig();
-  const leadershipQuestions = config.sections.find(section => section.id === "leadership").questions;
-  const structuresIndex = leadershipQuestions.findIndex(item => item.id === "structures");
+  const todayQuestions = config.sections.find(section => section.id === "today").questions;
+  const driversIndex = todayQuestions.findIndex(item => item.id === "drivers");
 
   assert.deepEqual(
-    Array.from(leadershipQuestions.slice(structuresIndex, structuresIndex + 3), item => item.id),
-    ["structures", "documentedPolicies", "commitment"]
+    Array.from(todayQuestions.slice(driversIndex, driversIndex + 2), item => item.id),
+    ["drivers", "documentedPolicies"]
   );
-  assert.equal(question(config, "leadership", "documentedPolicies").type, "check");
+  assert.equal(question(config, "today", "documentedPolicies").type, "check");
+  assert.equal(question(config, "leadership", "documentedPolicies"), undefined);
   assert.equal(
-    question(config, "leadership", "documentedPolicies").label,
+    question(config, "today", "documentedPolicies").label,
     "Do you have documented policies or procedures for:"
   );
 });
 
 test("offers the requested documented policy and procedure options", () => {
   const config = loadConfig();
-  const item = question(config, "leadership", "documentedPolicies");
+  const item = question(config, "today", "documentedPolicies");
 
   assert.ok(item, "documented policies question should exist");
   assert.deepEqual(Array.from(item.options), [
