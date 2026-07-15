@@ -98,6 +98,34 @@ test("offers community of practice as an emerging structure", () => {
   );
 });
 
+test("places cultural assessments directly after structures and targets", () => {
+  const config = loadConfig();
+  const leadershipQuestions = config.sections.find(section => section.id === "leadership").questions;
+  const structuresIndex = leadershipQuestions.findIndex(item => item.id === "structures");
+
+  assert.deepEqual(
+    Array.from(leadershipQuestions.slice(structuresIndex, structuresIndex + 4), item => item.id),
+    ["structures", "culturalRiskAssessment", "culturalEducationNeedsAnalysis", "commitment"]
+  );
+});
+
+test("offers the requested status options for both cultural assessments", () => {
+  const config = loadConfig();
+  const expected = [
+    ["culturalRiskAssessment", "Have you conducted a cultural risks and opportunities assessment?"],
+    ["culturalEducationNeedsAnalysis", "Have you conducted a cultural education needs analysis?"]
+  ];
+
+  for (const [id, label] of expected) {
+    const item = question(config, "leadership", id);
+    assert.ok(item, `${id} should exist`);
+    assert.equal(item.type, "choice");
+    assert.equal(item.label, label);
+    assert.deepEqual(Array.from(item.options), ["Considering", "In progress", "Yes"]);
+    assert.equal(item.scoreMode, undefined);
+  }
+});
+
 test("places documented policies directly after current work drivers", () => {
   const config = loadConfig();
   const todayQuestions = config.sections.find(section => section.id === "today").questions;
