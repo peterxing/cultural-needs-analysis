@@ -98,9 +98,9 @@ test("plain-text reports recognise evidence and tailor next steps to gaps", () =
   const report = vm.runInContext("reportPlainText()", sandbox);
 
   assert.match(report, /Current maturity category: Seedling \(5\/98 points/);
-  assert.match(report, /What you have achieved:/);
+  assert.match(report, /✅ What you have achieved:/);
   assert.match(report, /We have an Aboriginal employment target\./);
-  assert.match(report, /Evidence to build next:/);
+  assert.match(report, /↑ Evidence to build next:/);
   assert.match(report, /Build an Aboriginal Employment Strategy for Long-Term Success/);
   assert.match(report, /Maximise the Impact of Aboriginal Procurement/);
   assert.doesNotMatch(report, /Develop Authentic Acknowledgement of Country Practices/);
@@ -115,9 +115,9 @@ test("plain-text reports retain qualitative ratings without adding them to the p
   const report = vm.runInContext("reportPlainText()", sandbox);
 
   assert.match(report, /Current maturity category: Seedling \(0\/98 points/);
-  assert.match(report, /Qualitative strengths:/);
+  assert.match(report, /✦ Qualitative strengths:/);
   assert.match(report, /Leadership actively advocates.*5\/5/);
-  assert.match(report, /Qualitative growth signals:/);
+  assert.match(report, /🍃 Qualitative growth signals:/);
   assert.match(report, /Cultural capability is connected.*2\/5/);
   assert.match(report, /Examples supplied:/);
   assert.match(report, /Quarterly belonging survey and retention review\./);
@@ -149,6 +149,37 @@ test("recommended next steps have one line of separation between items", () => {
     html,
     /<h3>Recommended next steps<\/h3>\$\{listOrNote\(tailored\.actions, [^}]+, "recommended-next-steps"\)\}/
   );
+});
+
+test("report insight sections use accessible visual markers", () => {
+  const source = applicationSource();
+  assert.match(source, /function reportSectionHeading/);
+
+  const sandbox = appContext();
+  const markers = [
+    ["What you have achieved", "circle-check", "achievement"],
+    ["Evidence to build next", "arrow-up", "evidence"],
+    ["Qualitative strengths", "sparkles", "strength"],
+    ["Qualitative growth signals", "leaf", "growth"]
+  ];
+
+  for (const [label, icon, tone] of markers) {
+    const rendered = vm.runInContext(
+      `reportSectionHeading(${JSON.stringify(label)}, ${JSON.stringify(icon)}, ${JSON.stringify(tone)})`,
+      sandbox
+    );
+    assert.match(rendered, new RegExp(`data-lucide="${icon}"`));
+    assert.match(rendered, new RegExp(`report-section-marker-${tone}`));
+    assert.match(rendered, /aria-hidden="true"/);
+    assert.match(rendered, new RegExp(`>${label}<`));
+  }
+
+  assert.match(html, /report-section-marker-achievement[\s\S]*color:\s*var\(--primary-2\)/);
+  assert.match(html, /report-section-marker-growth[\s\S]*color:\s*var\(--primary-2\)/);
+  assert.match(source, /reportSectionHeading\("What you have achieved", "circle-check", "achievement"\)/);
+  assert.match(source, /reportSectionHeading\("Evidence to build next", "arrow-up", "evidence"\)/);
+  assert.match(source, /reportSectionHeading\("Qualitative strengths", "sparkles", "strength"\)/);
+  assert.match(source, /reportSectionHeading\("Qualitative growth signals", "leaf", "growth"\)/);
 });
 
 test("session brief creates a non-email paid-session handoff", () => {
