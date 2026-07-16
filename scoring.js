@@ -122,12 +122,21 @@
     const qualitativeGrowth = [];
     const narrativeEvidence = [];
     const recommendationCandidates = [];
+    const excludedServiceIds = new Set();
     const scoreByQuestion = new Map(assessment.questionScores.map(item => [item.id, item]));
 
     for (const section of config.sections || []) {
       for (const question of section.questions || []) {
         const id = `${section.id}.${question.id}`;
         const answer = answers[id];
+        const selectedLabels = question.type === "check"
+          ? (answer?.values || [])
+          : (answer?.label ? [answer.label] : []);
+        for (const label of selectedLabels) {
+          for (const serviceId of question.serviceExclusionIdsByAnswer?.[label] || []) {
+            excludedServiceIds.add(serviceId);
+          }
+        }
         if (question.reportEvidence && answer?.text?.trim()) {
           narrativeEvidence.push({
             sectionId: section.id,
@@ -196,7 +205,7 @@
     recommendationCandidates.sort((a, b) => b.deficit - a.deficit);
     const uniqueIds = field => [...new Set(recommendationCandidates.flatMap(item => item[field]))];
     const recommendedActionIds = uniqueIds("actionIds");
-    const recommendedServiceIds = uniqueIds("serviceIds");
+    const recommendedServiceIds = uniqueIds("serviceIds").filter(id => !excludedServiceIds.has(id));
 
     return { achievements, evidenceGaps, qualitativeStrengths, qualitativeGrowth, narrativeEvidence, prioritySections, recommendedActionIds, recommendedServiceIds };
   }

@@ -281,7 +281,15 @@
             { id: "drivers", type: "check", scoreMode: "sum", insightMode: "context", label: "What is driving this work now?", options: [
               ["Leadership priority", 1], ["Reconciliation Action Plan", 1], ["Workforce development", 1], ["Community expectations", 1], ["Procurement and supplier diversity", 1], ["Partnership opportunity", 1], ["Service quality and cultural safety", 1], ["Employee belonging", 1], ["ESG reporting", 1], ["Aboriginal strategic plan", 1], ["Aboriginal employment strategy", 1]
             ]},
-            { id: "documentedPolicies", type: "check", label: "Do you have documented policies or procedures for:", options: [
+            { id: "documentedPolicies", type: "check", label: "Do you have documented policies or procedures for:", serviceExclusionIdsByAnswer: {
+              "Welcome to Country and Acknowledgement to Country protocol": ["acknowledgement-handbook"],
+              "Culturally Informed Communication guide": ["terminology-guide"],
+              "ICIP and cultural protocols guide": ["icip-policy"],
+              "Managing Indigenous Cultural and Intellectual Property (ICIP) protocol": ["icip-policy"],
+              "Aboriginal Employment Strategy": ["employment-advisory"],
+              "Aboriginal procurement strategy": ["procurement-advisory"],
+              "Cultural education strategy": ["learning-pathways"]
+            }, options: [
               "Welcome to Country and Acknowledgement to Country protocol",
               "Culturally Informed Communication guide",
               "ICIP and cultural protocols guide",
@@ -303,8 +311,8 @@
             { id: "structures", type: "check", scoreMode: "sum", maxPoints: 21, noneOption: "None of these structures or targets are currently in place.", actionIds: ["cultural-risk-opportunity", "communication-framework", "employment-strategy", "procurement-impact"], serviceIds: ["terminology-guide", "risk-opportunity-mapping", "employment-advisory", "procurement-advisory"], label: "Which structures or targets are in place or emerging?", options: [
               ["RAP working group or champion network", 3], ["Executive sponsor", 3], ["Aboriginal employment target", 3], ["Aboriginal procurement target", 3], ["Cultural governance or advisory group", 3], ["Regular internal communication", 3], ["Board or senior leadership reporting", 3], ["Dedicated budget or resourcing", 3], ["Part of a Community of practice", 3], ["None of these structures or targets are currently in place.", 0]
             ]},
-            { id: "culturalRiskAssessment", type: "choice", reportOnly: true, label: "Have you conducted a cultural risks and opportunities assessment?", options: ["Considering", "In progress", "Yes"] },
-            { id: "culturalEducationNeedsAnalysis", type: "choice", reportOnly: true, label: "Have you conducted a cultural education needs analysis?", options: ["Considering", "In progress", "Yes"] },
+            { id: "culturalRiskAssessment", type: "choice", reportOnly: true, serviceExclusionIdsByAnswer: { "Yes": ["risk-opportunity-mapping"] }, label: "Have you conducted a cultural risks and opportunities assessment?", options: ["Considering", "In progress", "Yes"] },
+            { id: "culturalEducationNeedsAnalysis", type: "choice", reportOnly: true, serviceExclusionIdsByAnswer: { "Yes": ["learning-pathways"] }, label: "Have you conducted a cultural education needs analysis?", options: ["Considering", "In progress", "Yes"] },
             { id: "commitment", type: "choice", label: "How would you describe organisational commitment today?", options: [
               ["Curious and forming", 1], ["Supportive but inconsistent", 2], ["Clear and developing", 3], ["Strong and increasingly embedded", 4], ["Shared, visible and accountable", 5]
             ]}

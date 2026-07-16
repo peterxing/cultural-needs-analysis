@@ -123,6 +123,49 @@ test("plain-text reports retain qualitative ratings without adding them to the p
   assert.match(report, /Quarterly belonging survey and retention review\./);
 });
 
+test("suggested advisory services omit products already reported as in place", () => {
+  const sandbox = appContext({
+    "today.documentedPolicies": { values: [
+      "Welcome to Country and Acknowledgement to Country protocol",
+      "Culturally Informed Communication guide",
+      "Managing Indigenous Cultural and Intellectual Property (ICIP) protocol",
+      "Aboriginal Employment Strategy",
+      "Aboriginal procurement strategy",
+      "Cultural education strategy"
+    ] },
+    "leadership.structures": { values: ["None of these structures or targets are currently in place."] },
+    "leadership.culturalRiskAssessment": { label: "Yes", score: 3 },
+    "leadership.culturalEducationNeedsAnalysis": { label: "Yes", score: 3 },
+    "workforce.training": { label: "Little or no formal learning yet", score: 1 },
+    "community.practices": { values: ["None of these engagement practices are currently used."] },
+    "impact.employment": { values: ["None of these employment measures are currently in place."] },
+    "impact.procurement": { values: ["None of these procurement measures are currently in place."] },
+    "impact.measurement": { label: "Not yet measured", score: 0 }
+  });
+
+  const insights = vm.runInContext("scoreReport().insights", sandbox);
+  const services = Array.from(vm.runInContext("tailoredReportData(scoreReport()).services", sandbox));
+  const excludedIds = [
+    "acknowledgement-handbook",
+    "terminology-guide",
+    "risk-opportunity-mapping",
+    "icip-policy",
+    "learning-pathways",
+    "employment-advisory",
+    "procurement-advisory"
+  ];
+
+  for (const id of excludedIds) {
+    assert.ok(!insights.recommendedServiceIds.includes(id), `${id} should be excluded`);
+  }
+  assert.ok(insights.recommendedServiceIds.includes("aboriginal-engagement-strategy"));
+  assert.ok(insights.recommendedServiceIds.includes("community-stakeholder-strategy"));
+  assert.ok(insights.recommendedServiceIds.includes("esg-advisory"));
+  assert.doesNotMatch(services.join("\n"), /Acknowledgement of Country Protocols and Handbook/);
+  assert.doesNotMatch(services.join("\n"), /Aboriginal Employment Strategy/);
+  assert.match(services.join("\n"), /Aboriginal Engagement Strategy/);
+});
+
 test("shows the requested five-point legend under every one-to-five rating question", () => {
   const sandbox = appContext();
   const expected = "1 = started, 2 = emerging, 3 = developing, 4 = refining, 5 = embedded and impact-led";
