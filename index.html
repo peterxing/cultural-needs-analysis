@@ -106,23 +106,24 @@
     .report-prose ul { margin: .4rem 0 0; padding-left: 1.1rem; }
     .report-prose li { margin: .24rem 0; }
     .report-prose .recommended-next-steps li + li { margin-top: 1rem; }
-    .report-prose .report-section-heading { display: flex; align-items: center; gap: .65rem; margin-top: 1.25rem; }
-    .report-section-marker {
+    .report-prose .report-icon-list { margin-top: .45rem; padding-left: 0; list-style: none; }
+    .report-prose .report-icon-list li { display: flex; align-items: flex-start; gap: .6rem; margin: .35rem 0; }
+    .report-list-icon {
       display: inline-flex;
-      width: 1.8rem;
-      height: 1.8rem;
-      flex: 0 0 1.8rem;
+      width: 1.1rem;
+      height: 1.1rem;
+      flex: 0 0 1.1rem;
       align-items: center;
       justify-content: center;
-      border-radius: 999px;
+      margin-top: .32rem;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    .report-section-marker svg { width: 1rem; height: 1rem; stroke-width: 2.5; }
-    .report-section-marker-achievement,
-    .report-section-marker-growth { background: #e8f4ec; color: var(--primary-2); }
-    .report-section-marker-evidence { background: #e9f1f7; color: var(--blue); }
-    .report-section-marker-strength { background: #fbefd9; color: #7c481d; }
+    .report-list-icon svg { width: 1rem; height: 1rem; stroke-width: 2.6; }
+    .report-list-icon-achievement,
+    .report-list-icon-growth { color: var(--primary-2); }
+    .report-list-icon-evidence { color: var(--blue); }
+    .report-list-icon-strength { color: #7c481d; }
     @media print {
       header, .no-print, #assessmentNav, #leadCapture { display: none !important; }
       body { background: white; }
@@ -684,9 +685,10 @@
       return { achievementEvidence, evidenceGaps, qualitativeStrengths, qualitativeGrowth, narrativeEvidence, actions, services };
     }
 
-    function reportSectionHeading(label, icon, tone) {
+    function iconListOrNote(items, note, icon, tone) {
       const safeTone = ["achievement", "evidence", "strength", "growth"].includes(tone) ? tone : "strength";
-      return `<h3 class="report-section-heading"><span class="report-section-marker report-section-marker-${safeTone}" aria-hidden="true"><i data-lucide="${escapeHtml(icon)}"></i></span><span>${escapeHtml(label)}</span></h3>`;
+      const points = items && items.length ? items : [note];
+      return `<ul class="report-icon-list">${points.map(point => `<li><span class="report-list-icon report-list-icon-${safeTone}" aria-hidden="true"><i data-lucide="${escapeHtml(icon)}"></i></span><span>${escapeHtml(point)}</span></li>`).join("")}</ul>`;
     }
 
     function renderReport() {
@@ -717,10 +719,10 @@
         </div>
         <h3>Current position</h3><p>${r.level.description}</p>
         <h3>Gap analysis</h3><p>Your evidence score is <strong>${r.score} out of ${r.maxScore}</strong>, placing the organisation in <strong>${r.level.name}</strong>, with an aspiration towards <strong>${r.aspirational.name}</strong>. The next-step priorities below are drawn from the evidence selected and the evidence not yet in place.</p>
-        ${reportSectionHeading("What you have achieved", "circle-check", "achievement")}${listOrNote(tailored.achievementEvidence.slice(0, 10), "Complete the scored prompts to identify and recognise current achievements.")}
-        ${reportSectionHeading("Evidence to build next", "arrow-up", "evidence")}${listOrNote(tailored.evidenceGaps.slice(0, 8), "No additional scored evidence gaps were identified in the completed responses.")}
-        ${reportSectionHeading("Qualitative strengths", "sparkles", "strength")}${listOrNote(tailored.qualitativeStrengths.slice(0, 8), "No high qualitative ratings have been captured yet.")}
-        ${reportSectionHeading("Qualitative growth signals", "leaf", "growth")}${listOrNote(tailored.qualitativeGrowth.slice(0, 8), "No qualitative growth signals have been captured yet.")}
+        <h3>What you have achieved</h3>${iconListOrNote(tailored.achievementEvidence.slice(0, 10), "Complete the scored prompts to identify and recognise current achievements.", "circle-check", "achievement")}
+        <h3>Evidence to build next</h3>${iconListOrNote(tailored.evidenceGaps.slice(0, 8), "No additional scored evidence gaps were identified in the completed responses.", "arrow-up", "evidence")}
+        <h3>Qualitative strengths</h3>${iconListOrNote(tailored.qualitativeStrengths.slice(0, 8), "No high qualitative ratings have been captured yet.", "sparkles", "strength")}
+        <h3>Qualitative growth signals</h3>${iconListOrNote(tailored.qualitativeGrowth.slice(0, 8), "No qualitative growth signals have been captured yet.", "leaf", "growth")}
         <h3>Examples supplied</h3>${listOrNote(tailored.narrativeEvidence.slice(0, 6), "No implementation examples have been supplied yet.")}
         <h3>Strongest evidence areas</h3>${listOrNote(strengths.map(s => `${s.title}: ${Math.round(s.percent)}% of available evidence points`), "Complete more of the assessment to reveal strength areas.")}
         <h3>Priority growth areas</h3>${listOrNote(growth.map(s => `${s.title}: ${Math.round(s.percent)}% of available evidence points`), "Complete more of the assessment to reveal growth opportunities.")}
@@ -784,17 +786,17 @@
         "Section evidence scores:",
         ...r.sectionScores.map(section => `- ${section.title}: ${section.points}/${section.maxPoints} (${Math.round(section.percent)}%)`),
         "",
-        "✅ What you have achieved:",
-        ...(tailored.achievementEvidence.length ? tailored.achievementEvidence.map(item => `- ${item}`) : ["- Complete the scored prompts to identify current achievements."]),
+        "What you have achieved:",
+        ...(tailored.achievementEvidence.length ? tailored.achievementEvidence.map(item => `✅ ${item}`) : ["✅ Complete the scored prompts to identify current achievements."]),
         "",
-        "↑ Evidence to build next:",
-        ...(tailored.evidenceGaps.length ? tailored.evidenceGaps.slice(0, 10).map(item => `- ${item}`) : ["- No additional scored evidence gaps were identified in the completed responses."]),
+        "Evidence to build next:",
+        ...(tailored.evidenceGaps.length ? tailored.evidenceGaps.slice(0, 10).map(item => `↑ ${item}`) : ["↑ No additional scored evidence gaps were identified in the completed responses."]),
         "",
-        "✦ Qualitative strengths:",
-        ...(tailored.qualitativeStrengths.length ? tailored.qualitativeStrengths.map(item => `- ${item}`) : ["- No high qualitative ratings have been captured yet."]),
+        "Qualitative strengths:",
+        ...(tailored.qualitativeStrengths.length ? tailored.qualitativeStrengths.map(item => `✦ ${item}`) : ["✦ No high qualitative ratings have been captured yet."]),
         "",
-        "🍃 Qualitative growth signals:",
-        ...(tailored.qualitativeGrowth.length ? tailored.qualitativeGrowth.map(item => `- ${item}`) : ["- No qualitative growth signals have been captured yet."]),
+        "Qualitative growth signals:",
+        ...(tailored.qualitativeGrowth.length ? tailored.qualitativeGrowth.map(item => `🍃 ${item}`) : ["🍃 No qualitative growth signals have been captured yet."]),
         "",
         "Examples supplied:",
         ...(tailored.narrativeEvidence.length ? tailored.narrativeEvidence.map(item => `- ${item}`) : ["- No implementation examples have been supplied yet."]),
